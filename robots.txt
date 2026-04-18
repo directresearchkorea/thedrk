@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://thedrk.com/sitemap.xml
+
+# Direct Research Korea
+# https://thedrk.com

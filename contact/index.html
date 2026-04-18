@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Send RFQ | Contact Direct Research Korea</title>
+  <meta name="description" content="Submit your RFQ to Direct Research Korea. Receive a thoughtful research proposal within 12 hours. Consumer research, UX research, and fieldwork in Korea.">
+  <link rel="canonical" href="https://thedrk.com/contact/">
+  <meta property="og:title" content="Send RFQ | Contact Direct Research Korea">
+  <meta property="og:url" content="https://thedrk.com/contact/">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"ContactPage","name":"Contact Direct Research Korea","url":"https://thedrk.com/contact/"}
+  </script>
+  <link rel="stylesheet" href="/css/design-system.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+</head>
+<body>
+  <nav class="nav" id="main-nav" role="navigation"><div class="nav__inner"><a href="/" class="nav__logo"><span class="nav__logo-icon">DK</span><span>Dr.K</span></a><div class="nav__links"><a href="/" class="nav__link">Home</a><a href="/about/" class="nav__link">About</a><div class="nav__dropdown"><a href="/insights/" class="nav__link nav__dropdown-trigger">Insights</a><div class="nav__dropdown-menu"><a href="/insights/gaming/" class="nav__dropdown-item">Gaming</a><a href="/insights/travelling/" class="nav__dropdown-item">Travelling</a><a href="/insights/beauty/" class="nav__dropdown-item">Beauty</a><a href="/insights/alcohols/" class="nav__dropdown-item">Alcohols</a></div></div><div class="nav__dropdown"><a href="/services/" class="nav__link nav__dropdown-trigger">Services</a><div class="nav__dropdown-menu"><a href="/services/consumer-research/" class="nav__dropdown-item">Consumer Research</a><a href="/services/user-research/" class="nav__dropdown-item">User Research</a><a href="/services/research-facility/" class="nav__dropdown-item">Research Facility</a></div></div></div><a href="/contact/" class="nav__cta active">Send RFQ</a><button class="nav__toggle" id="nav-toggle" aria-label="Toggle menu"><span class="nav__toggle-line"></span><span class="nav__toggle-line"></span><span class="nav__toggle-line"></span></button></div></nav>
+  <div class="nav__mobile" id="mobile-menu"><a href="/" class="nav__mobile-link">Home</a><a href="/about/" class="nav__mobile-link">About</a><a href="/insights/" class="nav__mobile-link">Insights</a><a href="/services/" class="nav__mobile-link">Services</a><a href="/contact/" class="nav__mobile-link" style="color: var(--color-black);">Send RFQ</a></div>
+
+  <section class="contact-hero"><div class="container">
+    <div class="breadcrumb reveal"><a href="/">Home</a><span class="breadcrumb__sep">›</span><span>Contact</span></div>
+    <h1 class="heading-1 reveal">Send <span class="text-gradient">RFQ</span></h1>
+    <p class="body-lg reveal reveal--delay-1" style="max-width:600px;">Dr. K will respond to you within 12 hours with a thoughtful research proposal.</p>
+  </div></section>
+
+  <section class="section"><div class="container">
+    <div class="contact__grid">
+      <div class="contact__form-card reveal">
+        <h2 class="contact__form-title">Tell Us About Your Project</h2>
+        <p class="contact__form-subtitle">Fill out the form below and we'll get back to you promptly.</p>
+        
+        <!-- Using Google Apps Script endpoint for form handling -->
+        <form id="rfq-form" data-track-form="rfq_form" action="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec" method="POST">
+          <div class="form-group">
+            <label class="form-label" for="name">Your Name *</label>
+            <input type="text" class="form-input" id="name" name="name" required placeholder="John Smith">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address *</label>
+            <input type="email" class="form-input" id="email" name="email" required placeholder="john@company.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="company">Company / Organization</label>
+            <input type="text" class="form-input" id="company" name="company" placeholder="Company name">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="service">Research Type</label>
+            <select class="form-select" id="service" name="service">
+              <option value="">Select a service...</option>
+              <option value="consumer">Consumer Research</option>
+              <option value="user">User / UX Research</option>
+              <option value="facility">Research Facility</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="message">Project Description *</label>
+            <textarea class="form-textarea" id="message" name="message" required placeholder="Tell us about your research needs, timeline, and any specific requirements..."></textarea>
+          </div>
+          <button type="submit" class="btn btn--primary btn--lg" style="width:100%;justify-content:center;" data-track-cta="contact_submit_rfq">
+            Submit RFQ <span class="btn__arrow">→</span>
+          </button>
+        </form>
+        <div id="form-success" style="display:none;text-align:center;padding:var(--space-10);">
+          <div style="font-size:3rem;margin-bottom:var(--space-4);">✅</div>
+          <h3 class="heading-3" style="margin-bottom:var(--space-2);">Thank you!</h3>
+          <p class="body-base">Dr. K will respond within 12 hours.</p>
+        </div>
+      </div>
+
+      <div class="contact__info reveal reveal--delay-2">
+        <div class="contact__info-card">
+          <div class="contact__info-icon">📍</div>
+          <h3 class="contact__info-title">Office</h3>
+          <p class="contact__info-text">3F, Sejong SB PLAZA<br>Guncheong-ro 93, Jochiwon-eup<br>Sejong, Korea</p>
+          <p class="contact__info-text" style="margin-top:var(--space-2);color:var(--color-gray-500);">세종특별자치시 조치원읍 군청로 93, SB플라자 3층</p>
+        </div>
+        <div class="contact__info-card">
+          <div class="contact__info-icon">📞</div>
+          <h3 class="contact__info-title">Phone</h3>
+          <p class="contact__info-text"><a href="tel:+82448626263" style="color: var(--color-black);">(+82) 44-862-6263</a></p>
+        </div>
+        <div class="contact__info-card">
+          <div class="contact__info-icon">✉️</div>
+          <h3 class="contact__info-title">Email</h3>
+          <p class="contact__info-text"><a href="mailto:drk@thedrk.com" style="color: var(--color-black);">drk@thedrk.com</a></p>
+        </div>
+        <div class="contact__info-card">
+          <div class="contact__info-icon">⏱️</div>
+          <h3 class="contact__info-title">Response Time</h3>
+          <p class="contact__info-text">We respond to all inquiries within <strong style="color: var(--color-black);">12 hours</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </div></section>
+
+  <footer class="footer"><div class="container"><div class="footer__grid"><div><a href="/" class="nav__logo"><span class="nav__logo-icon">DK</span><span>Dr.K</span></a><p class="footer__brand-desc">Market Research Expertise in Korea.</p></div><div><h4 class="footer__heading">Services</h4><a href="/services/consumer-research/" class="footer__link">Consumer Research</a><a href="/services/user-research/" class="footer__link">User Research</a><a href="/services/research-facility/" class="footer__link">Research Facility</a></div><div><h4 class="footer__heading">Insights</h4><a href="/insights/" class="footer__link">All Insights</a></div><div><h4 class="footer__heading">Contact</h4><a href="tel:+82448626263" class="footer__link">📞 (+82) 44-862-6263</a><a href="mailto:drk@thedrk.com" class="footer__link">✉️ drk@thedrk.com</a></div></div><hr class="divider"><div class="footer__bottom"><p class="footer__copy">© 2024 Direct Research Korea.</p></div></div></footer>
+  <button class="back-to-top" id="back-to-top" aria-label="Back to top">↑</button>
+  <script src="/js/navigation.js"></script>
+  <script src="/js/analytics.js"></script>
+  <script>
+  // Form submission handler (Google Apps Script)
+  const form=document.getElementById('rfq-form');
+  const success=document.getElementById('form-success');
+  if(form){form.addEventListener('submit',function(e){
+    e.preventDefault();
+    const data=new FormData(form);
+    fetch(form.action,{method:'POST',body:data}).then(()=>{
+      form.style.display='none';success.style.display='block';
+    }).catch(()=>{alert('Submission failed. Please email drk@thedrk.com directly.');});
+  });}
+  </script>
+</body>
+</html>
+
+
