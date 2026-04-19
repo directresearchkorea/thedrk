@@ -1,0 +1,17 @@
+Found article tag!
+[H1]: Feelings in Focus: How DRK Turns Emotion & Videography into 2025’s Research Edge
+[H3]: Have you noticed how the most memorable brands don’t just sell products—they stage emotions? In 2025, mastering those emotions is the shortest path to genuine consumer loyalty, and Direct Research Korea (DRK) is leading the charge with cost‑smart, open‑source‑powered tools that capture feelings frame by frame.
+[H2]: Why Feelings Trump Figures
+[P]: 95 % of choices are subconscious— Behavioral economists keep proving it, yet many marketers still fixate on purely rational metrics. DRK flips the lens to the emotional layer where decisions actually happen.
+[P]: Emotion multiplies ROI— Campaigns that trigger joy, pride, or belonging deliver outsized gains. Think Coca‑Cola’s “Share a Coke” bottles or the TikTok that made you smile before you even caught the brand name.
+[H2]: The DRK Emotion & Videography Toolkit
+[P]: Facial‑Code AI— Our most widely deployed technique. Rapidly evolving algorithms pinpoint micro‑expressions—even from everyday action cams or PC webcams—quantifying delight, surprise, or confusion in milliseconds whenever a respondent’s face is in view.
+[P]: Eyeball‑Tracking— The same accessible cameras map gaze paths across gaming, movie, and software screens—as well as retail shelves or unboxing videos—revealing precisely where attention lands.
+[P]: EDA Sensors— Wearable devices capture electrodermal activity spikes that signal subconscious arousal—vital for suspense‑laden ads or UX flows.
+[P]: Integrated Videography— Multi‑angle shoots simultaneously capture respondentsandin‑screen analytics overlays, so researchers review behavioral cues and data insights in one cohesive video.
+[H2]: Mini‑Case Clips
+[P]: Beauty Brand Unboxing— Facial‑Code AI pinpointed the exact unboxing second when joy peaks, guiding packaging tweaks that lifted repurchase intent.
+[P]: Mobile Game UX— Eyeball‑Tracking + EDA uncovered a tension spike during level‑up animations, prompting a redesign that slashed churn in beta.
+[P]: Coffeehouse Concept Test— Integrated videography revealed unexpected moments of “calm” as customers lingered under warm lighting, shaping the store’s final moodboard.
+[P]: Since 2023, DRK has blended facial coding, eye‑tracking, EDA, and cinematic videography to decode consumer feelings—without inflating your research budget. Ready to feel what your data’s been missing?Let’s turn emotions into your next competitive edge.
+[P]: #EyeTracking#Videography#ConsumerEmotion#MarketResearchKorea#UserResearch#BehavioralScience

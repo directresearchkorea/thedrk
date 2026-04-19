@@ -1,39 +1,11 @@
-"""
-Direct Research Korea — Blog Post Builder
-==========================================
-마크다운 파일에서 블로그 포스트 HTML을 자동 생성하는 도구
-
-사용법:
-  1. tools/posts/ 폴더에 마크다운 파일을 작성합니다.
-  2. 마크다운 파일 상단에 메타데이터를 포함합니다 (아래 형식 참고)
-  3. 이 스크립트를 실행하면 insights/[slug]/index.html이 자동 생성됩니다.
-
-마크다운 파일 형식 (tools/posts/my-post.md):
-  ---
-  title: 포스트 제목
-  description: 검색 결과에 표시될 설명 (160자 이내)
-  category: gaming
-  date: 2026-04-18
-  slug: my-post-url
-  ---
-  
-  본문 내용을 여기에 작성...
-  
-  ## 소제목
-  
-  본문 내용...
-
-실행:
-  python tools/build_post.py                    # 모든 포스트 빌드
-  python tools/build_post.py my-post.md         # 특정 포스트만 빌드
-"""
-
 import os
 import re
 import sys
 import json
 from datetime import datetime
 from pathlib import Path
+
+sys.stdout.reconfigure(encoding='utf-8')
 
 # 경로 설정
 SCRIPT_DIR = Path(__file__).parent
@@ -46,10 +18,9 @@ INSIGHTS_PAGE = OUTPUT_DIR / "index.html"
 
 
 def parse_frontmatter(content):
-    """마크다운 파일에서 프론트매터(메타데이터)와 본문을 분리"""
     match = re.match(r'^---\s*\n(.*?)\n---\s*\n(.*)$', content, re.DOTALL)
     if not match:
-        print("  ⚠️  프론트매터를 찾을 수 없습니다. ---로 감싸진 메타데이터가 필요합니다.")
+        print("  ⚠️  Frontmatter not found. Expected metadata wrapped in ---")
         return None, content
     
     meta_text = match.group(1)
@@ -59,13 +30,12 @@ def parse_frontmatter(content):
     for line in meta_text.strip().split('\n'):
         if ':' in line:
             key, value = line.split(':', 1)
-            meta[key.strip()] = value.strip()
+            meta[key.strip()] = value.strip().strip('"').strip("'")
     
     return meta, body
 
 
 def markdown_to_html(md_text):
-    """간단한 마크다운 → HTML 변환기"""
     lines = md_text.strip().split('\n')
     html_lines = []
     in_list = False
@@ -81,21 +51,16 @@ def markdown_to_html(md_text):
             paragraph = []
     
     def convert_inline(text):
-        # Bold: **text** or __text__
         text = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', text)
         text = re.sub(r'__(.*?)__', r'<strong>\1</strong>', text)
-        # Italic: *text* or _text_
         text = re.sub(r'\*(.*?)\*', r'<em>\1</em>', text)
-        # Links: [text](url)
         text = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<a href="\2">\1</a>', text)
-        # Inline code: `code`
         text = re.sub(r'`([^`]+)`', r'<code>\1</code>', text)
         return text
     
     for line in lines:
         stripped = line.strip()
         
-        # Empty line
         if not stripped:
             flush_paragraph()
             if in_list:
@@ -106,7 +71,6 @@ def markdown_to_html(md_text):
                 in_blockquote = False
             continue
         
-        # Headers
         if stripped.startswith('### '):
             flush_paragraph()
             text = convert_inline(stripped[4:])
@@ -118,7 +82,6 @@ def markdown_to_html(md_text):
             html_lines.append(f'<h2>{text}</h2>')
             continue
         
-        # Blockquote
         if stripped.startswith('> '):
             flush_paragraph()
             if not in_blockquote:
@@ -128,7 +91,6 @@ def markdown_to_html(md_text):
             html_lines.append(f'<p>{text}</p>')
             continue
         
-        # Unordered list
         if stripped.startswith('- ') or stripped.startswith('• '):
             flush_paragraph()
             if not in_list:
@@ -138,7 +100,6 @@ def markdown_to_html(md_text):
             html_lines.append(f'<li>{text}</li>')
             continue
         
-        # Image: ![alt](src)
         img_match = re.match(r'!\[([^\]]*)\]\(([^)]+)\)', stripped)
         if img_match:
             flush_paragraph()
@@ -147,13 +108,11 @@ def markdown_to_html(md_text):
             html_lines.append(f'<img src="{src}" alt="{alt}" loading="lazy">')
             continue
         
-        # Horizontal rule
         if stripped in ('---', '***', '___'):
             flush_paragraph()
             html_lines.append('<hr class="divider">')
             continue
         
-        # Regular paragraph
         paragraph.append(stripped)
     
     flush_paragraph()
@@ -166,49 +125,142 @@ def markdown_to_html(md_text):
 
 
 def build_post(md_path):
-    """마크다운 파일 → HTML 블로그 포스트 생성"""
-    print(f"\n📝 빌드 중: {md_path.name}")
+    print(f"\n📝 Building: {md_path.name}")
     
     content = md_path.read_text(encoding='utf-8')
     meta, body = parse_frontmatter(content)
     
     if not meta:
-        print("  ❌ 메타데이터 없음 — 건너뜁니다.")
+        print("  ❌ No metadata — skipping.")
         return None
     
-    # 필수 필드 확인
-    required = ['title', 'description', 'category', 'date', 'slug']
+    required = ['title', 'description', 'category', 'date']
     for field in required:
         if field not in meta:
-            print(f"  ❌ 필수 필드 누락: {field}")
+            print(f"  ❌ Missing required field: {field}")
             return None
     
-    # 본문을 HTML로 변환
+    if 'slug' not in meta:
+        meta['slug'] = md_path.stem
+        
+    if not meta.get('thumbnail') or meta.get('thumbnail').strip() == '':
+        # Search for youtube embed in body
+        yt_match = re.search(r'youtube\.com/embed/([a-zA-Z0-9_-]+)', body)
+        if yt_match:
+            meta['thumbnail'] = f"https://i.ytimg.com/vi/{yt_match.group(1)}/maxresdefault.jpg"
+        else:
+            img_match = re.search(r'!\[.*?\]\((.*?)\)', body)
+            if img_match:
+                meta['thumbnail'] = img_match.group(1)
+            else:
+                meta['thumbnail'] = '/assets/images/logo.png'
+        
     html_body = markdown_to_html(body)
     
-    # 템플릿 로드
     template = TEMPLATE_PATH.read_text(encoding='utf-8')
     
-    # 플레이스홀더 치환
     html = template.replace('%%TITLE%%', meta['title'])
     html = html.replace('%%DESCRIPTION%%', meta['description'])
     html = html.replace('%%SLUG%%', meta['slug'])
-    html = html.replace('%%DATE%%', meta['date'])
-    html = html.replace('%%CATEGORY%%', meta['category'].capitalize())
+    # Parse and format the date cleanly
+    try:
+        from datetime import datetime
+        d = datetime.strptime(meta['date'][:10], '%Y-%m-%d')
+        formatted_date = d.strftime('%Y-%m-%d')
+    except:
+        formatted_date = meta['date'][:10]
+        
+    html = html.replace('%%DATE%%', formatted_date)
+    html = html.replace('%%CATEGORY%%', meta['category'])
     html = html.replace('%%CONTENT%%', html_body)
     
-    # 출력 디렉토리 생성
+    thumb_url = meta.get('thumbnail', '')
+    if thumb_url and not thumb_url.startswith('http'):
+        if not thumb_url.startswith('/'):
+            thumb_url = '/' + thumb_url
+        thumb_url = f"https://thedrk.com{thumb_url}"
+    html = html.replace('%%THUMBNAIL%%', thumb_url)
+    
     output_dir = OUTPUT_DIR / meta['slug']
     output_dir.mkdir(parents=True, exist_ok=True)
     output_file = output_dir / 'index.html'
     output_file.write_text(html, encoding='utf-8')
     
-    print(f"  ✅ 생성: insights/{meta['slug']}/index.html")
+    print(f"  ✅ Created: insights/{meta['slug']}/index.html")
     return meta
 
+def build_index(posts_meta):
+    print('\\n📊 Created: insights/index.html (Blog Index)')
+    
+    posts_meta.sort(key=lambda x: x.get('date', ''), reverse=True)
+    
+    categories = set()
+    for meta in posts_meta:
+        cats = [c.strip().lower() for c in meta.get('category', '').split(',') if c.strip()]
+        categories.update(cats)
+        
+    categories = sorted(list(categories))
+            
+    filter_html = '<div class="insights-filter reveal" id="insight-filter">\n'
+    filter_html += '  <button class="insights-filter__btn active" data-filter="all">All</button>\n'
+    for cat in categories:
+        filter_html += f'  <button class="insights-filter__btn" data-filter="{cat}">{cat}</button>\n'
+    filter_html += '</div>'
+    
+    grid_html = '<div class="insights-grid" id="insights-grid">\n'
+    for meta in posts_meta:
+        slug = meta.get('slug', '')
+        title = meta.get('title', '')
+        desc = meta.get('description', '')
+        cats_raw = [c.strip().lower() for c in meta.get('category', '').split(',') if c.strip()]
+        cat = ','.join(cats_raw)
+        date_str = meta.get('date', '')
+        thumb = meta.get('thumbnail', '/assets/images/logo.png')
+        if not thumb or thumb.strip() == '':
+            thumb = '/assets/images/logo.png'
+        
+        formatted_date = date_str[:10]
+        try:
+            d = datetime.strptime(date_str[:10], '%Y-%m-%d')
+            formatted_date = d.strftime('%Y-%m-%d')
+        except:
+            pass
+            
+        read_time = max(1, len(desc) // 200)
+        
+        card = f"""
+      <a href="/insights/{slug}/" class="card" data-category="{cat}">
+        <img src="{thumb}" alt="" class="card__image" loading="lazy">
+        <div class="card__body">
+          <div class="card__author">
+            <div class="card__author-left">
+              <div class="card__author-info">
+                <span class="card__author-name">The Dr.K</span>
+                <span class="card__author-meta">{formatted_date} · {read_time} min read</span>
+              </div>
+            </div>
+            <div class="card__more-icon">⋮</div>
+          </div>
+          <h2 class="card__title">{title}</h2>
+          <p class="card__excerpt">{desc}</p>
+        </div>
+      </a>"""
+        grid_html += card + '\n'
+        
+    grid_html += '    </div>'
+    
+    template_path = SCRIPT_DIR / 'insights-template.html'
+    if not template_path.exists():
+        print('  ❌ insights-template.html is missing.')
+        return
+        
+    html = template_path.read_text(encoding='utf-8')
+    html = html.replace('<!-- INSIGHTS_FILTER -->', filter_html)
+    html = html.replace('<!-- INSIGHTS_GRID -->', grid_html)
+    
+    INSIGHTS_PAGE.write_text(html, encoding='utf-8')
 
 def update_sitemap(posts_meta):
-    """sitemap.xml에 새 포스트 URL 추가"""
     if not posts_meta:
         return
     
@@ -226,7 +278,7 @@ def update_sitemap(posts_meta):
             sitemap = sitemap.replace('</urlset>', f'{entry}\n</urlset>')
     
     SITEMAP_PATH.write_text(sitemap, encoding='utf-8')
-    print(f"\n🗺️  sitemap.xml 업데이트 완료 ({len(posts_meta)}개 URL 추가)")
+    print(f"\n🗺️  sitemap.xml updated ({len(posts_meta)}URLs added)")
 
 
 def main():
@@ -234,60 +286,19 @@ def main():
     print("🔨 Direct Research Korea — Blog Post Builder")
     print("=" * 50)
     
-    # posts 디렉토리 확인
     if not POSTS_DIR.exists():
         POSTS_DIR.mkdir(parents=True)
-        # 샘플 포스트 생성
-        sample = POSTS_DIR / "sample-post.md"
-        sample.write_text("""---
-title: Sample Blog Post Title
-description: This is a sample blog post for Direct Research Korea. Replace with your content.
-category: gaming
-date: 2026-04-18
-slug: sample-post
----
-
-This is your blog post content. Write in **markdown** format.
-
-## Introduction
-
-Start with an engaging introduction to your research topic.
-
-## Key Findings
-
-- Finding 1: Describe your first key finding
-- Finding 2: Another important discovery
-- Finding 3: Data-driven insight
-
-## Analysis
-
-Detailed analysis goes here. You can use **bold text** for emphasis, *italic* for nuance, and [links](https://thedrk.com) to reference sources.
-
-> Important quotes or callouts can be formatted as blockquotes.
-
-## Conclusion
-
-Wrap up with actionable insights and next steps.
-""", encoding='utf-8')
-        print(f"\n📁 posts 디렉토리 생성: {POSTS_DIR}")
-        print(f"📄 샘플 포스트 생성: sample-post.md")
-        print(f"\n💡 사용법:")
-        print(f"   1. {POSTS_DIR} 에 .md 파일을 작성하세요")
-        print(f"   2. python tools/build_post.py 를 실행하세요")
-        return
     
-    # 특정 파일만 빌드하거나 전체 빌드
     if len(sys.argv) > 1:
         md_files = [POSTS_DIR / sys.argv[1]]
     else:
         md_files = sorted(POSTS_DIR.glob('*.md'))
     
     if not md_files:
-        print("\n⚠️  포스트 파일이 없습니다.")
-        print(f"   {POSTS_DIR} 에 .md 파일을 추가하세요.")
+        print("\n⚠️  No post files found.")
         return
     
-    print(f"\n📂 {len(md_files)}개 파일 발견")
+    print(f"\n📂 {len(md_files)}files found")
     
     built = []
     for md_path in md_files:
@@ -296,14 +307,14 @@ Wrap up with actionable insights and next steps.
             if meta:
                 built.append(meta)
         else:
-            print(f"\n❌ 파일 없음: {md_path}")
+            print(f"\n❌ File not found: {md_path}")
     
-    # sitemap 업데이트
     if built:
+        build_index(built)
         update_sitemap(built)
     
     print(f"\n{'=' * 50}")
-    print(f"✨ 완료! {len(built)}개 포스트 빌드됨")
+    print(f"✨ Done! {len(built)}posts built")
     print(f"{'=' * 50}")
 
 

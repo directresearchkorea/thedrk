@@ -1,0 +1,21 @@
+backend:
+  name: github
+  repo: your-github-username/your-repo-name # MUST CHANGE THIS TO YOUR ACTUAL GITHUB REPO NAME!
+  branch: main
+
+media_folder: "assets/images/posts"
+public_folder: "/assets/images/posts"
+
+collections:
+  - name: "post"
+    label: "Post"
+    folder: "tools/posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Publish Date", name: "date", widget: "datetime"}
+      - {label: "Category", name: "category", widget: "select", options: ["Gaming", "Travelling", "Beauty", "Alcohols", "Food & Beverage", "Automotive", "Entertainment", "IT & Tech", "Consumer Research", "User Research", "Service & Cases", "Training & Lectures", "consumer", "pet"], multiple: true}
+      - {label: "Thumbnail URL", name: "thumbnail", widget: "string", required: false, hint: "Enter image path like /assets/images/posts/img.jpg or youtube thumbnail URL"}
+      - {label: "Description", name: "description", widget: "text"}
+      - {label: "Body", name: "body", widget: "markdown"}
