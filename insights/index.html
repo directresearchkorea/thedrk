@@ -30,20 +30,21 @@
 </div></section>
 <section class="section--sm"><div class="container">
 <div class="insights-filter reveal" id="insight-filter">
-  <button class="insights-filter__btn active" data-filter="all">All</button>
-  <button class="insights-filter__btn" data-filter="alcohols">alcohols</button>
-  <button class="insights-filter__btn" data-filter="beauty">beauty</button>
-  <button class="insights-filter__btn" data-filter="car">car</button>
-  <button class="insights-filter__btn" data-filter="consumers">consumers</button>
-  <button class="insights-filter__btn" data-filter="covids">covids</button>
-  <button class="insights-filter__btn" data-filter="events & awards">events & awards</button>
-  <button class="insights-filter__btn" data-filter="gaming">gaming</button>
-  <button class="insights-filter__btn" data-filter="insights">insights</button>
-  <button class="insights-filter__btn" data-filter="movie & annimation">movie & annimation</button>
-  <button class="insights-filter__btn" data-filter="pet">pet</button>
-  <button class="insights-filter__btn" data-filter="retail">retail</button>
-  <button class="insights-filter__btn" data-filter="service & cases">service & cases</button>
-  <button class="insights-filter__btn" data-filter="training & lectures">training & lectures</button>
+  <a href="/insights/" class="insights-filter__btn active">All</a>
+  <a href="/insights/alcohols/" class="insights-filter__btn">Alcohols</a>
+  <a href="/insights/beauty/" class="insights-filter__btn">Beauty</a>
+  <a href="/insights/car/" class="insights-filter__btn">Car</a>
+  <a href="/insights/consumers/" class="insights-filter__btn">Consumers</a>
+  <a href="/insights/covids/" class="insights-filter__btn">Covids</a>
+  <a href="/insights/events & awards/" class="insights-filter__btn">Events & Awards</a>
+  <a href="/insights/gaming/" class="insights-filter__btn">Gaming</a>
+  <a href="/insights/insights/" class="insights-filter__btn">Insights</a>
+  <a href="/insights/movie & annimation/" class="insights-filter__btn">Movie & Annimation</a>
+  <a href="/insights/pet/" class="insights-filter__btn">Pet</a>
+  <a href="/insights/retail/" class="insights-filter__btn">Retail</a>
+  <a href="/insights/service & cases/" class="insights-filter__btn">Service & Cases</a>
+  <a href="/insights/training & lectures/" class="insights-filter__btn">Training & Lectures</a>
+  <a href="/insights/travelling/" class="insights-filter__btn">Travelling</a>
 </div>
 <div class="insights-grid" id="insights-grid">
 
@@ -64,7 +65,7 @@
         </div>
       </a>
 
-      <a href="/insights/how-do-korean-travelers-prepare-for-international-trips-the-real-structure-of-travel-planning-reve/" class="card" data-category="insights">
+      <a href="/insights/how-do-korean-travelers-prepare-for-international-trips-the-real-structure-of-travel-planning-reve/" class="card" data-category="travelling">
         <img src="/assets/images/posts/a14e67_821dec12755a4be497d7d028220da6e7_mv2.jpg" alt="" class="card__image" loading="lazy">
         <div class="card__body">
           <div class="card__author">
@@ -132,7 +133,7 @@
         </div>
       </a>
 
-      <a href="/insights/airport-experience-insights-the-top-5-overseas-airports-loved-by-korean-travelers/" class="card" data-category="insights">
+      <a href="/insights/airport-experience-insights-the-top-5-overseas-airports-loved-by-korean-travelers/" class="card" data-category="travelling">
         <img src="/assets/images/posts/a14e67_bff43cdf3ec0488aae379099920b9817_mv2.jpg" alt="" class="card__image" loading="lazy">
         <div class="card__body">
           <div class="card__author">
@@ -3055,51 +3056,29 @@
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const cards = Array.from(document.querySelectorAll('#insights-grid .card'));
-    const btns = document.querySelectorAll('.insights-filter__btn');
-    const empty = document.getElementById('insights-empty');
     const loadMoreBtn = document.getElementById('load-more-btn');
-    let active = 'all';
     let visibleCount = 9;
     
     function render() {
-      let matchCount = 0;
       let shownCount = 0;
       
       cards.forEach(card => {
-        const cat = card.getAttribute('data-category');
-        const isMatch = active === 'all' || (cat && cat.split(',').includes(active));
-        
-        if (isMatch) {
-          matchCount++;
-          if (shownCount < visibleCount) {
-            card.style.display = '';
-            shownCount++;
-          } else {
-            card.style.display = 'none';
-          }
+        if (shownCount < visibleCount) {
+          card.style.display = '';
+          shownCount++;
         } else {
           card.style.display = 'none';
         }
       });
       
-      empty.style.display = matchCount === 0 ? 'block' : 'none';
-      
       if (loadMoreBtn) {
-        if (shownCount < matchCount) {
+        if (shownCount < cards.length) {
           loadMoreBtn.style.display = 'inline-block';
         } else {
           loadMoreBtn.style.display = 'none';
         }
       }
     }
-    
-    btns.forEach(b => b.addEventListener('click', () => {
-      btns.forEach(x => x.classList.remove('active'));
-      b.classList.add('active');
-      active = b.getAttribute('data-filter');
-      visibleCount = 9;
-      render();
-    }));
     
     if (loadMoreBtn) {
       loadMoreBtn.addEventListener('click', () => {

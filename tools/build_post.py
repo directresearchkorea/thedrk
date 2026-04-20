@@ -190,7 +190,7 @@ def build_post(md_path):
     return meta
 
 def build_index(posts_meta):
-    print('\\n📊 Created: insights/index.html (Blog Index)')
+    print('\n📊 Created: insights/index.html (Blog Index)')
     
     posts_meta.sort(key=lambda x: x.get('date', ''), reverse=True)
     
@@ -200,36 +200,48 @@ def build_index(posts_meta):
         categories.update(cats)
         
     categories = sorted(list(categories))
-            
-    filter_html = '<div class="insights-filter reveal" id="insight-filter">\n'
-    filter_html += '  <button class="insights-filter__btn active" data-filter="all">All</button>\n'
-    for cat in categories:
-        filter_html += f'  <button class="insights-filter__btn" data-filter="{cat}">{cat}</button>\n'
-    filter_html += '</div>'
     
-    grid_html = '<div class="insights-grid" id="insights-grid">\n'
-    for meta in posts_meta:
-        slug = meta.get('slug', '')
-        title = meta.get('title', '')
-        desc = meta.get('description', '')
-        cats_raw = [c.strip().lower() for c in meta.get('category', '').split(',') if c.strip()]
-        cat = ','.join(cats_raw)
-        date_str = meta.get('date', '')
-        thumb = meta.get('thumbnail', '/assets/images/logo.png')
-        if not thumb or thumb.strip() == '':
-            thumb = '/assets/images/logo.png'
+    template_path = SCRIPT_DIR / 'insights-template.html'
+    if not template_path.exists():
+        print('  ❌ insights-template.html is missing.')
+        return
         
-        formatted_date = date_str[:10]
-        try:
-            d = datetime.strptime(date_str[:10], '%Y-%m-%d')
-            formatted_date = d.strftime('%Y-%m-%d')
-        except:
-            pass
+    template = template_path.read_text(encoding='utf-8')
+    
+    def create_page(target_path, active_cat, display_posts):
+        filter_html = '<div class="insights-filter reveal" id="insight-filter">\n'
+        active_class = ' active' if active_cat == 'all' else ''
+        filter_html += f'  <a href="/insights/" class="insights-filter__btn{active_class}">All</a>\n'
+        for cat in categories:
+            cat_display = cat.title()
+            active_class = ' active' if active_cat == cat else ''
+            filter_html += f'  <a href="/insights/{cat}/" class="insights-filter__btn{active_class}">{cat_display}</a>\n'
+        filter_html += '</div>'
+        
+        grid_html = '<div class="insights-grid" id="insights-grid">\n'
+        for meta in display_posts:
+            slug = meta.get('slug', '')
+            title = meta.get('title', '')
+            desc = meta.get('description', '')
+            cats_raw = [c.strip().lower() for c in meta.get('category', '').split(',') if c.strip()]
+            cat_str = ','.join(cats_raw)
+            date_str = meta.get('date', '')
+            thumb = meta.get('thumbnail', '/assets/images/logo.png')
+            if not thumb or thumb.strip() == '':
+                thumb = '/assets/images/logo.png'
             
-        read_time = max(1, len(desc) // 200)
-        
-        card = f"""
-      <a href="/insights/{slug}/" class="card" data-category="{cat}">
+            formatted_date = date_str[:10]
+            try:
+                from datetime import datetime
+                d = datetime.strptime(date_str[:10], '%Y-%m-%d')
+                formatted_date = d.strftime('%Y-%m-%d')
+            except:
+                pass
+                
+            read_time = max(1, len(desc) // 200)
+            
+            card = f"""
+      <a href="/insights/{slug}/" class="card" data-category="{cat_str}">
         <img src="{thumb}" alt="" class="card__image" loading="lazy">
         <div class="card__body">
           <div class="card__author">
@@ -245,21 +257,25 @@ def build_index(posts_meta):
           <p class="card__excerpt">{desc}</p>
         </div>
       </a>"""
-        grid_html += card + '\n'
+            grid_html += card + '\n'
+            
+        grid_html += '    </div>'
         
-    grid_html += '    </div>'
-    
-    template_path = SCRIPT_DIR / 'insights-template.html'
-    if not template_path.exists():
-        print('  ❌ insights-template.html is missing.')
-        return
+        html = template.replace('<!-- INSIGHTS_FILTER -->', filter_html)
+        html = html.replace('<!-- INSIGHTS_GRID -->', grid_html)
         
-    html = template_path.read_text(encoding='utf-8')
-    html = html.replace('<!-- INSIGHTS_FILTER -->', filter_html)
-    html = html.replace('<!-- INSIGHTS_GRID -->', grid_html)
-    
-    INSIGHTS_PAGE.write_text(html, encoding='utf-8')
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        target_path.write_text(html, encoding='utf-8')
 
+    # Main page
+    create_page(INSIGHTS_PAGE, 'all', posts_meta)
+    
+    # Category pages
+    for cat in categories:
+        cat_posts = [m for m in posts_meta if cat in [c.strip().lower() for c in m.get('category', '').split(',') if c.strip()]]
+        cat_path = OUTPUT_DIR / cat / "index.html"
+        create_page(cat_path, cat, cat_posts)
+        print(f"  ✅ Created: insights/{cat}/index.html")
 def update_sitemap(posts_meta):
     if not posts_meta:
         return

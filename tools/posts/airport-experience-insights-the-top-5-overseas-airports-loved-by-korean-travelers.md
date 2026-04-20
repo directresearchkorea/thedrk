@@ -1,7 +1,7 @@
 ---
 title: "✈️ Airport Experience Insights: The Top 5 Overseas Airports Loved by Korean Travelers"
 date: "2025-12-02T05:02:51.862Z"
-category: "Insights"
+category: "Travelling"
 thumbnail: "/assets/images/posts/a14e67_bff43cdf3ec0488aae379099920b9817_mv2.jpg"
 description: "This report highlights the top five overseas airports most loved by Korean travelers—Changi, Fukuoka, New Chitose, Sydney, and Heathrow—based on DRK’s direct consumer research. Insights reveal why these airports excel in duty-free shopping, efficiency, local experiences, and overall airport satisfaction. DRK provides trusted airport experience insights tailored to the Korean market."
 ---

@@ -1,7 +1,7 @@
 ---
 title: "How Do Korean Travelers Prepare for International Trips?: The Real Structure of Travel Planning Revealed by App Usage Patterns"
 date: "2026-02-24T07:24:11.351Z"
-category: "Insights"
+category: "Travelling"
 thumbnail: "/assets/images/posts/a14e67_821dec12755a4be497d7d028220da6e7_mv2.jpg"
 description: "Korean travelers do not rely on a single all-in-one travel app when preparing for international trips. Instead, they combine multiple platforms at each stage—using flight comparison tools like Skyscanner and Google Flights, condition-based hotel booking apps such as Agoda and Booking.com, and specialized platforms like Klook for activities. Travel planning is a structured, risk-minimizing decision process rather than a one-click booking experience."
 ---
