@@ -2,7 +2,6 @@ backend:
   name: github
   repo: directresearchkorea/thedrk
   branch: main
-
 media_folder: "assets/images/posts"
 public_folder: "/assets/images/posts"
 
