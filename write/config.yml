@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: your-github-username/your-repo-name # MUST CHANGE THIS TO YOUR ACTUAL GITHUB REPO NAME!
+  repo: directresearchkorea/thedrk
   branch: main
 
 media_folder: "assets/images/posts"
