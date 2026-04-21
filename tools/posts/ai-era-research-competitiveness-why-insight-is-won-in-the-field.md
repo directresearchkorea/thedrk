@@ -19,9 +19,11 @@ A recent field-based research project with a Japanese company provided a clear a
 
 ![Observation of a commercial kitchen environment, examining cooking equipment, ingredients, and layou](/assets/images/posts/pasted-image-1776748095332.png)
 
+Observation of a commercial kitchen environment, examining cooking equipment, ingredients, and layout
+
 ![Observation of a commercial kitchen environment, examining cooking equipment, ingredients, and layou](/assets/images/posts/pasted-image-1776748271316.png)
 
-Observation of a commercial kitchen environment, examining cooking equipment, ingredients, and layou
+Observation of a commercial kitchen environment, examining cooking equipment, ingredients, and layout
 
 One of the most striking aspects of field research was that the end of each session marked the beginning of evaluation.
 
