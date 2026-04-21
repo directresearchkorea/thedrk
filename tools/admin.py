@@ -156,4 +156,4 @@ def upload_image():
 if __name__ == '__main__':
     # Make sure templates folder exists
     os.makedirs(os.path.join(os.path.dirname(__file__), 'templates'), exist_ok=True)
-    app.run(port=5000, debug=True)
+    app.run(port=5001, debug=True)

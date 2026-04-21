@@ -8,13 +8,18 @@ on:
       - 'tools/posts/**'
       - 'tools/build_post.py'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-        
+        with:
+          fetch-depth: 0
+          
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -29,9 +34,7 @@ jobs:
         run: python tools/build_post.py
         
       - name: Commit and Push changes
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add insights/ index.html sitemap.xml
-          git commit -m "Auto-build HTML from new markdown posts" || echo "No changes to commit"
-          git push
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Auto-build HTML from new markdown posts"
+          file_pattern: 'insights/ sitemap.xml index.html'

@@ -15,6 +15,7 @@ TEMPLATE_PATH = SCRIPT_DIR / "post-template.html"
 OUTPUT_DIR = PROJECT_ROOT / "insights"
 SITEMAP_PATH = PROJECT_ROOT / "sitemap.xml"
 INSIGHTS_PAGE = OUTPUT_DIR / "index.html"
+HOMEPAGE_PATH = PROJECT_ROOT / "index.html"
 
 
 def parse_frontmatter(content):
@@ -276,6 +277,73 @@ def build_index(posts_meta):
         cat_path = OUTPUT_DIR / cat / "index.html"
         create_page(cat_path, cat, cat_posts)
         print(f"  ✅ Created: insights/{cat}/index.html")
+
+def update_homepage(posts_meta):
+    print('\n🏠 Updating: index.html (Homepage Latest Research)')
+    
+    if not HOMEPAGE_PATH.exists():
+        print('  ❌ root index.html is missing.')
+        return
+        
+    posts_meta.sort(key=lambda x: x.get('date', ''), reverse=True)
+    latest_posts = posts_meta[:3]
+    
+    homepage_html = HOMEPAGE_PATH.read_text(encoding='utf-8')
+    
+    # Define the pattern for the latest research section
+    # We look for the container of the cards
+    pattern = r'<div class="insights-preview__list">.*?</div>\s*</div>\s*</section>'
+    
+    new_cards_html = '<div class="insights-preview__list">\n'
+    for i, meta in enumerate(latest_posts):
+        slug = meta.get('slug', '')
+        title = meta.get('title', '')
+        desc = meta.get('description', '')
+        thumb = meta.get('thumbnail', '/assets/images/logo.png')
+        if not thumb or thumb.strip() == '':
+            thumb = '/assets/images/logo.png'
+            
+        date_str = meta.get('date', '')
+        formatted_year = date_str[:4]
+        
+        read_time = max(1, len(desc) // 200)
+        delay_class = f" reveal--delay-{i}" if i > 0 else ""
+        
+        card = f"""        <a class="card reveal{delay_class}" data-track-insight="{title}" href="/insights/{slug}/">
+          <img src="{thumb}" alt="" class="card__image" loading="lazy">
+          <div class="card__body">
+            <div class="card__author">
+              <div class="card__author-info">
+                <span class="card__author-name">The Dr.K</span>
+                <span class="card__author-meta">{formatted_year} · {read_time} min read</span>
+              </div>
+            </div>
+            <h3 class="card__title">{title}</h3>
+            <p class="card__excerpt">{desc}</p>
+            <span class="card__link">Read More →</span>
+          </div>
+        </a>"""
+        new_cards_html += card + '\n'
+    
+    new_cards_html += '      </div>'
+    
+    # Using regex to replace the section
+    # We find the start of the list and the end of the list
+    start_tag = '<div class="insights-preview__list">'
+    end_tag = '</div>\n    </div>\n  </section>'
+    
+    start_idx = homepage_html.find(start_tag)
+    end_idx = homepage_html.find(end_tag)
+    
+    if start_idx != -1 and end_idx != -1:
+        # We need to be careful with the end_tag because it might appear multiple times
+        # But in our structure it's fairly unique
+        new_homepage = homepage_html[:start_idx] + new_cards_html + homepage_html[end_idx:]
+        HOMEPAGE_PATH.write_text(new_homepage, encoding='utf-8')
+        print(f"  ✅ Homepage updated with {len(latest_posts)} latest posts.")
+    else:
+        print("  ⚠️  Could not find Latest Research section tags in index.html")
+
 def update_sitemap(posts_meta):
     if not posts_meta:
         return
@@ -327,6 +395,7 @@ def main():
     
     if built:
         build_index(built)
+        update_homepage(built)
         update_sitemap(built)
     
     print(f"\n{'=' * 50}")
