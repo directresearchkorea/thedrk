@@ -116,11 +116,16 @@
 
     // Keyword spam filter
     const msg = document.getElementById('message') ? document.getElementById('message').value.toLowerCase() : '';
-    const spamKeywords = ['bitcoin', ' btc ', 'crypto', 'casino', 'telegra.ph', 'seo services', 'cloud mining', 'withdrawal', 'earn money', '투자', '카지노', '코인', 'viagra'];
+    const email = document.getElementById('email') ? document.getElementById('email').value.toLowerCase() : '';
+    const company = document.getElementById('company') ? document.getElementById('company').value.toLowerCase() : '';
     
+    const spamKeywords = ['bitcoin', ' btc ', 'crypto', 'casino', 'telegra.ph', 'seo services', 'cloud mining', 'withdrawal', 'earn money', '투자', '카지노', '코인', 'viagra', 'volia saber el seu preu'];
     const hasSpamKeyword = spamKeywords.some(keyword => msg.includes(keyword));
     
-    if(hasSpamKeyword) {
+    // Check for fake google company
+    const isFakeGoogle = (company.includes('google') && !email.includes('google.com') && !email.includes('gmail.com'));
+    
+    if(hasSpamKeyword || isFakeGoogle) {
       // Fake success for spam bots
       form.style.display='none';
       success.style.display='block';
