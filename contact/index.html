@@ -115,17 +115,30 @@
     }
 
     // Keyword spam filter
-    const msg = document.getElementById('message') ? document.getElementById('message').value.toLowerCase() : '';
+    const nameStr = document.getElementById('name') ? document.getElementById('name').value : '';
+    const msgStr = document.getElementById('message') ? document.getElementById('message').value : '';
     const email = document.getElementById('email') ? document.getElementById('email').value.toLowerCase() : '';
-    const company = document.getElementById('company') ? document.getElementById('company').value.toLowerCase() : '';
+    const companyStr = document.getElementById('company') ? document.getElementById('company').value : '';
     
-    const spamKeywords = ['bitcoin', ' btc ', 'crypto', 'casino', 'telegra.ph', 'seo services', 'cloud mining', 'withdrawal', 'earn money', '투자', '카지노', '코인', 'viagra', 'volia saber el seu preu'];
-    const hasSpamKeyword = spamKeywords.some(keyword => msg.includes(keyword));
+    const allText = (nameStr + ' ' + msgStr + ' ' + companyStr).toLowerCase();
     
-    // Check for fake google company
-    const isFakeGoogle = (company.includes('google') && !email.includes('google.com') && !email.includes('gmail.com'));
+    // 1. Emojis
+    const emojiRegex = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
+    const hasEmoji = emojiRegex.test(nameStr + ' ' + msgStr + ' ' + companyStr);
     
-    if(hasSpamKeyword || isFakeGoogle) {
+    // 2. Code-like formats (long hex strings like 03d2707aa6...)
+    const codeRegex = /[a-f0-9]{25,}/gi;
+    const hasCode = codeRegex.test(allText);
+    
+    // 3. Shady domains & keywords
+    const spamKeywords = ['bitcoin', ' btc ', 'crypto', 'casino', 'telegra.ph', 't.me', 'bit.ly', 'seo services', 'cloud mining', 'withdrawal', 'earn money', '투자', '카지노', '코인', 'viagra', 'volia saber el seu preu'];
+    const hasSpamKeyword = spamKeywords.some(keyword => allText.includes(keyword));
+    
+    // 4. Fake google company check
+    const companyLower = companyStr.toLowerCase();
+    const isFakeGoogle = (companyLower.includes('google') && !email.includes('google.com') && !email.includes('gmail.com'));
+    
+    if(hasEmoji || hasCode || hasSpamKeyword || isFakeGoogle) {
       // Fake success for spam bots
       form.style.display='none';
       success.style.display='block';
