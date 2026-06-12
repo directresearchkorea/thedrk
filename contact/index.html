@@ -136,7 +136,7 @@
     
     // 4. Fake google company check
     const companyLower = companyStr.toLowerCase();
-    const isFakeGoogle = (companyLower.includes('google') && !email.includes('google.com') && !email.includes('gmail.com'));
+    const isFakeGoogle = (companyLower.includes('google') && !email.includes('google.com'));
     
     if(hasEmoji || hasCode || hasSpamKeyword || isFakeGoogle) {
       // Fake success for spam bots
