@@ -31,68 +31,21 @@
       }
     }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="/css/design-system.css" rel="stylesheet"/>
+    <link href="/css/components.css" rel="stylesheet"/>
+    <link href="/css/pages.css" rel="stylesheet"/>
+    <link href="/assets/icons/favicon.svg" rel="icon" type="image/svg+xml"/>
+    
     <style>
-        :root {
-            /* White */
-            --color-white: #FFFFFF;
-            --color-white-warm: #FAFAFA;
-            --color-offwhite: #F5F5F5;
-            
-            /* Black / Gray */
-            --color-black: #111111;
-            --color-charcoal: #1A1A1A;
-            --color-gray-100: #F0F0F0;
-            --color-gray-200: #E2E2E2;
-            --color-gray-600: #555555;
-            --color-gray-800: #333333;
-            
-            --color-border: rgba(0, 0, 0, 0.08);
-            
-            --font-heading: 'Outfit', sans-serif;
-            --font-body: 'Inter', sans-serif;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: var(--font-body);
-            background-color: var(--color-white);
-            color: var(--color-black);
-            line-height: 1.6;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; color: var(--color-black); }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-
-        header {
-            position: fixed; top: 0; left: 0; width: 100%; padding: 20px 0;
-            background-color: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(12px);
-            z-index: 100; border-bottom: 1px solid var(--color-border);
-        }
-
-        .nav-content { display: flex; justify-content: space-between; align-items: center; }
-
-        .logo { font-family: var(--font-heading); font-size: 24px; font-weight: 800; color: var(--color-black); text-decoration: none; }
-        .logo span { color: var(--color-gray-600); }
-
-        .hero { padding: 180px 0 100px; text-align: center; background-color: var(--color-white-warm); border-bottom: 1px solid var(--color-border); }
-        .hero h1 { font-size: clamp(40px, 5vw, 64px); line-height: 1.1; margin-bottom: 24px; }
-        .hero p { font-size: 18px; color: var(--color-gray-600); max-width: 700px; margin: 0 auto; font-weight: 400; }
-
-        .section-title { font-size: 36px; margin-bottom: 48px; text-align: center; }
-        .facilities { padding: 80px 0; }
-
+        .section-title { font-size: 36px; margin-bottom: 48px; text-align: center; font-family: var(--font-heading); }
+        .facilities { padding: 80px 0; background: var(--color-white); }
+        
         .feature-large {
             display: grid; grid-template-columns: 1fr 1.2fr; gap: 48px; align-items: center;
             margin-bottom: 80px; padding: 48px; background: var(--color-white); border: 1px solid var(--color-border); border-radius: 16px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
-        .feature-content h2 { font-size: 32px; margin-bottom: 16px; }
+        .feature-content h2 { font-size: 32px; margin-bottom: 16px; font-family: var(--font-heading); }
         .feature-content p { color: var(--color-gray-600); margin-bottom: 24px; }
         .feature-list { list-style: none; margin-bottom: 24px; }
         .feature-list li { position: relative; padding-left: 24px; margin-bottom: 8px; color: var(--color-gray-800); }
@@ -102,23 +55,21 @@
         .gallery-img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; border: 1px solid var(--color-border); }
         .gallery-img.large { grid-column: span 2; height: 300px; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; margin-bottom: 60px; }
-        .card { background: var(--color-white); border: 1px solid var(--color-border); border-radius: 16px; padding: 32px; transition: transform 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; }
-        .card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
-        .card h3 { font-size: 24px; margin-bottom: 16px; }
-        .card p { color: var(--color-gray-600); margin-bottom: 20px; flex-grow: 1; }
-        .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--color-border); }
+        .facility-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; margin-bottom: 60px; }
+        .facility-card { background: var(--color-white); border: 1px solid var(--color-border); border-radius: 16px; padding: 32px; transition: transform 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; }
+        .facility-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+        .facility-card h3 { font-size: 24px; margin-bottom: 16px; font-family: var(--font-heading); }
+        .facility-card p { color: var(--color-gray-600); margin-bottom: 20px; flex-grow: 1; }
+        .facility-card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--color-border); }
 
         .location { padding: 80px 0 120px; background-color: var(--color-offwhite); border-top: 1px solid var(--color-border); }
         .location-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 48px; align-items: start; }
         .info-block { margin-bottom: 24px; }
-        .info-block h4 { color: var(--color-black); margin-bottom: 8px; font-size: 18px; }
+        .info-block h4 { color: var(--color-black); margin-bottom: 8px; font-size: 18px; font-family: var(--font-heading); }
         .info-block p { color: var(--color-gray-600); font-size: 16px; }
 
         .map-container { width: 100%; height: 450px; border-radius: 16px; overflow: hidden; border: 1px solid var(--color-border); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .map-container iframe { width: 100%; height: 100%; border: none; }
-
-        footer { border-top: 1px solid var(--color-border); padding: 40px 0; text-align: center; color: var(--color-gray-600); background: var(--color-white); }
 
         @media (max-width: 900px) {
             .feature-large, .location-grid { grid-template-columns: 1fr; gap: 32px; }
@@ -129,16 +80,59 @@
 </head>
 <body>
 
-    <header>
-        <div class="container nav-content">
-            <a href="#" class="logo">DRK<span>.</span></a>
-        </div>
-    </header>
+    <!-- Navigation -->
+    <nav aria-label="Main navigation" class="nav" id="main-nav" role="navigation">
+    <div class="nav__inner">
+    <a aria-label="Direct Research Korea Home" class="nav__logo" href="/">
+    <img alt="Direct Research Korea" src="/assets/images/logo.png" style="height:56px;width:auto;"/>
+    </a>
+    <div class="nav__links">
+    <a class="nav__link" data-i18n="nav_home" href="/">Home</a>
+    <a class="nav__link" data-i18n="nav_about" href="/about/">About</a>
+    <div class="nav__dropdown">
+    <a class="nav__link nav__dropdown-trigger" data-i18n="nav_insights" href="/insights/">Insights</a>
+    <div class="nav__dropdown-menu">
+    <a class="nav__dropdown-item" href="/insights/gaming/">Gaming</a>
+    <a class="nav__dropdown-item" href="/insights/travelling/">Travelling</a>
+    <a class="nav__dropdown-item" href="/insights/beauty/">Beauty</a>
+    <a class="nav__dropdown-item" href="/insights/alcohols/">Alcohols</a>
+    </div>
+    </div>
+    <div class="nav__dropdown">
+    <a class="nav__link nav__dropdown-trigger" data-i18n="nav_services" href="/services/">Services</a>
+    <div class="nav__dropdown-menu">
+    <a class="nav__dropdown-item" href="/services/consumer-research/">Consumer Research</a>
+    <a class="nav__dropdown-item" href="/services/user-research/">User Research</a>
+    <a class="nav__dropdown-item" href="/services/research-facility/">Research Facility</a>
+    </div>
+    </div>
+    <a class="nav__link active" data-i18n="nav_portfolio" href="/portfolio/">Portfolio</a>
+    </div>
+    <a class="nav__cta" data-i18n="nav_rfq" data-track-cta="nav_send_rfq" href="/contact/">Send RFQ</a>
+    <button aria-label="Toggle menu" class="nav__toggle" id="nav-toggle"><span class="nav__toggle-line"></span><span class="nav__toggle-line"></span><span class="nav__toggle-line"></span></button>
+    </div>
+    </nav>
+    <div class="nav__mobile" id="mobile-menu">
+    <a class="nav__mobile-link" data-i18n="nav_home" href="/">Home</a>
+    <a class="nav__mobile-link" data-i18n="nav_about" href="/about/">About</a>
+    <a class="nav__mobile-link" data-i18n="nav_insights" href="/insights/">Insights</a>
+    <a class="nav__mobile-link" data-i18n="nav_services" href="/services/">Services</a>
+    <a class="nav__mobile-link" data-i18n="nav_portfolio" href="/portfolio/">Portfolio</a>
+    <a class="nav__mobile-link" data-i18n="nav_rfq" href="/contact/" style="color: var(--color-black);">Send RFQ</a>
+    </div>
 
-    <section class="hero">
+    <!-- Hero -->
+    <section class="about-hero" style="padding-top: 120px; padding-bottom: 80px;">
         <div class="container">
-            <h1>Top Market Research Facility <br>in Seoul, South Korea</h1>
-            <p>Premium in-house observation, focus group (FGD), and central location testing (CLT) spaces located in the heart of Gangnam, Seoul. Fully equipped for global market researchers conducting deep consumer dialogues and comprehensive usability studies in Korea.</p>
+            <div class="breadcrumb reveal">
+                <a href="/">Home</a>
+                <span class="breadcrumb__sep">›</span>
+                <a href="/portfolio/">Portfolio</a>
+                <span class="breadcrumb__sep">›</span>
+                <span>In-House Facility</span>
+            </div>
+            <h1 class="heading-1 about-hero__title reveal">Top Market Research Facility <br>in Seoul, <span class="text-gradient">South Korea</span></h1>
+            <p class="about-hero__desc reveal reveal--delay-1">Premium in-house observation, focus group (FGD), and central location testing (CLT) spaces located in the heart of Gangnam, Seoul. Fully equipped for global market researchers conducting deep consumer dialogues and comprehensive usability studies in Korea.</p>
         </div>
     </section>
 
@@ -166,8 +160,8 @@
 
             <h2 class="section-title">Additional Spaces</h2>
             
-            <div class="grid">
-                <div class="card">
+            <div class="facility-grid">
+                <div class="facility-card">
                     <img src="assets/image11.jpeg" alt="FGD Room B" loading="lazy">
                     <h3>FGD Room B</h3>
                     <p>A dedicated focus group room equipped with advanced observation capabilities.</p>
@@ -178,7 +172,7 @@
                     </ul>
                 </div>
 
-                <div class="card">
+                <div class="facility-card">
                     <img src="assets/image8.jpeg" alt="Client Meeting Room" loading="lazy">
                     <h3>Client Meeting Room</h3>
                     <p>A dedicated meeting space for clients and internal teams.</p>
@@ -188,7 +182,7 @@
                     </ul>
                 </div>
 
-                <div class="card">
+                <div class="facility-card">
                     <img src="assets/clt_room.jpg" alt="CLT Room" loading="lazy">
                     <h3>CLT Room</h3>
                     <p>Optimized for Central Location Testing (CLT) and product evaluations.</p>
@@ -199,7 +193,7 @@
                     </ul>
                 </div>
 
-                <div class="card">
+                <div class="facility-card">
                     <img src="assets/image13.jpeg" alt="Kitchen Area" loading="lazy">
                     <h3>Kitchen & Amenities</h3>
                     <p>A fully equipped space for food and beverage preparation, testing, and participant refreshment.</p>
@@ -243,10 +237,44 @@
         </div>
     </section>
 
-    <footer>
-        <div class="container">
-            <p>&copy; Direct Research Korea (DRK). All rights reserved.</p>
-        </div>
+    <!-- Footer -->
+    <footer class="footer">
+    <div class="container">
+    <div class="footer__grid">
+    <div>
+    <a class="nav__logo" href="/"><img alt="Direct Research Korea" src="/assets/images/logo.png" style="height:56px;width:auto;"/></a>
+    <p class="footer__brand-desc">Market and Marketing Research Expertise in Korea. Since 2015, helping global brands navigate the Korean consumer landscape.</p>
+    </div>
+    <div>
+    <h4 class="footer__heading">Services</h4>
+    <a class="footer__link" href="/services/consumer-research/">Consumer Research</a>
+    <a class="footer__link" href="/services/user-research/">User Research</a>
+    <a class="footer__link" href="/services/research-facility/">Research Facility</a>
+    </div>
+    <div>
+    <h4 class="footer__heading">Insights</h4>
+    <a class="footer__link" href="/insights/gaming/">Gaming</a>
+    <a class="footer__link" href="/insights/travelling/">Travelling</a>
+    <a class="footer__link" href="/insights/beauty/">Beauty</a>
+    <a class="footer__link" href="/insights/alcohols/">Alcohols</a>
+    </div>
+    <div>
+    <h4 class="footer__heading">Contact</h4>
+    <p class="footer__link" style="cursor:default;">📍 3F, Sejong SB PLAZA, Sejong</p>
+    <a class="footer__link" href="tel:+82448626263">📞 (+82) 44-862-6263</a>
+    <a class="footer__link" href="mailto:jacob.ahn@thedrk.com">✉️ jacob.ahn@thedrk.com</a>
+    </div>
+    </div>
+    <hr class="divider"/>
+    <div class="footer__bottom">
+    <p class="footer__copy">© 2015~2024 Direct Research Korea. All rights reserved.</p>
+    <div class="footer__socials"></div>
+    </div>
+    </div>
     </footer>
+    <button aria-label="Back to top" class="back-to-top" id="back-to-top">↑</button>
+    <script src="/js/navigation.js"></script>
+    <script src="/js/analytics.js"></script>
+    <script src="/js/cookie-consent.js"></script>
 </body>
 </html>
