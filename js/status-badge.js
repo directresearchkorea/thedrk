@@ -1,7 +1,7 @@
 (function() {
   const ICAL_URLS = [
-    'https://calendar.google.com/calendar/ical/[구글계정1]%40gmail.com/public/basic.ics',
-    'https://calendar.google.com/calendar/ical/[구글계정2]%40gmail.com/public/basic.ics'
+    'https://calendar.google.com/calendar/ical/yourfriendjay%40gmail.com/public/basic.ics',
+    'https://calendar.google.com/calendar/ical/directresearchkorea%40gmail.com/public/basic.ics'
   ];
   
   const PROXY_URL = 'https://api.allorigins.win/raw?url=';
