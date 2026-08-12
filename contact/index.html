@@ -139,7 +139,13 @@
     const companyLower = companyStr.toLowerCase();
     const isFakeGoogle = (companyLower.includes('google') && !email.includes('google.com'));
     
-    if(hasEmoji || hasCode || hasSpamKeyword || isFakeGoogle) {
+    // 5. Fake name / random alphabet check
+    const hasNumbersInName = /[0-9]/.test(nameStr);
+    const hasManyConsonants = /[bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ]{5,}/.test(nameStr);
+    const hasNoVowels = /^[a-zA-Z]+$/.test(nameStr.replace(/\s/g, '')) && !/[aeiouAEIOU]/.test(nameStr) && nameStr.length > 3;
+    const hasRepeatingChars = /(.)\1{3,}/.test(nameStr);
+    
+    if(hasEmoji || hasCode || hasSpamKeyword || isFakeGoogle || hasNumbersInName || hasManyConsonants || hasNoVowels || hasRepeatingChars) {
       // Fake success for spam bots
       form.style.display='none';
       success.style.display='block';
