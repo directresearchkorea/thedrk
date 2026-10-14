@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" width="1200" height="680">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="50%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Outer Dark Frame -->
+  <rect width="1200" height="680" fill="url(#bgGrad)"/>
+
+  <!-- Top Badge & URL Pill -->
+  <rect x="44" y="20" width="520" height="32" rx="16" fill="#1e293b" stroke="#4f46e5" stroke-width="1.2"/>
+  <circle cx="62" cy="36" r="5" fill="#22c55e"/>
+  <text x="76" y="41" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="12.5" font-weight="700" fill="#e2e8f0">LIVE WEB APP · https://www.thedrk.com/portfolio/KoreanPersona/</text>
+
+  <rect x="930" y="20" width="226" height="32" rx="16" fill="#312e81"/>
+  <text x="1043" y="41" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#c7d2fe">30 Personas · 120 Quant Panel</text>
+
+  <!-- Browser Window Container -->
+  <rect x="44" y="64" width="1112" height="584" rx="14" fill="#f8fafc" filter="url(#shadow)" stroke="#334155" stroke-width="1"/>
+
+  <!-- Studio Top Header Bar -->
+  <rect x="44" y="64" width="1112" height="62" rx="14" fill="#ffffff"/>
+  <line x1="44" y1="126" x2="1156" y2="126" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Brand Logo + Title -->
+  <rect x="64" y="79" width="32" height="32" rx="8" fill="#0f172a"/>
+  <text x="80" y="99" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="800" fill="#ffffff">Dr.K</text>
+  <text x="106" y="94" font-family="Inter, sans-serif" font-size="15" font-weight="800" fill="#0f172a">Korean Synthetic Consumer Studio</text>
+  <text x="106" y="111" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#64748b">Direct Research Korea · 4D Empirical Persona &amp; Quant Panel Engine</text>
+
+  <!-- Interactive Language Toggle Bar (KO · EN · JA · ZH · ID) -->
+  <rect x="405" y="79" width="218" height="32" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+  <rect x="409" y="83" width="38" height="24" rx="6" fill="#4f46e5"/>
+  <text x="428" y="99" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="800" fill="#ffffff">KO</text>
+  <text x="470" y="99" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#475569">EN</text>
+  <text x="512" y="99" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#475569">JA</text>
+  <text x="554" y="99" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#475569">ZH</text>
+  <text x="596" y="99" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#475569">ID</text>
+
+  <!-- 3-Mode Navigation Tabs -->
+  <rect x="645" y="77" width="490" height="36" rx="9" fill="#f1f5f9"/>
+  <rect x="649" y="81" width="166" height="28" rx="7" fill="url(#accentGrad)"/>
+  <text x="732" y="99" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#ffffff">Mode 1 · 30 Qual Personas</text>
+  <text x="900" y="99" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="600" fill="#475569">Mode 2 · 120 Quant Survey</text>
+  <text x="1060" y="99" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="600" fill="#475569">Mode 3 · Report Studio</text>
+
+  <!-- Left Column: 30 Persona Screener Filter & Cards -->
+  <rect x="62" y="142" width="520" height="488" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+  <text x="82" y="170" font-family="Inter, sans-serif" font-size="13.5" font-weight="800" fill="#1e293b">30 Qualitative Persona Screener (15M / 15F · 5 Languages)</text>
+  <rect x="458" y="153" width="50" height="22" rx="6" fill="#4f46e5"/>
+  <text x="483" y="168" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" font-weight="700" fill="#ffffff">1:1 IDI</text>
+  <rect x="512" y="153" width="54" height="22" rx="6" fill="#f1f5f9"/>
+  <text x="539" y="168" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#475569">Mini-FGD</text>
+
+  <!-- Filter Pills -->
+  <rect x="82" y="184" width="112" height="28" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="94" y="202" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#334155">All Gender (30) ▾</text>
+  <rect x="202" y="184" width="108" height="28" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="214" y="202" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#334155">20s–50s Ages ▾</text>
+  <rect x="318" y="184" width="118" height="28" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="330" y="202" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#334155">SEC Income A+~D ▾</text>
+  <rect x="444" y="184" width="120" height="28" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="456" y="202" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#334155">All 11 Domains ▾</text>
+
+  <!-- Card 1: F01 Selected -->
+  <rect x="82" y="226" width="234" height="118" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="2"/>
+  <rect x="94" y="238" width="34" height="20" rx="5" fill="#fce7f3"/>
+  <text x="111" y="252" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" font-weight="800" fill="#be185d">F01</text>
+  <text x="135" y="253" font-family="Inter, sans-serif" font-size="13" font-weight="800" fill="#0f172a">최유나 (Yuna Choi) · 32</text>
+  <rect x="262" y="238" width="44" height="20" rx="5" fill="#e0e7ff"/>
+  <text x="284" y="252" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#3730a3">SEC B</text>
+  <text x="94" y="276" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#334155">Fintech Startup Senior PM</text>
+  <text x="94" y="295" font-family="Inter, sans-serif" font-size="10.5" fill="#64748b">Single 1-Person Household · Pet Owner</text>
+  <text x="94" y="324" font-family="Inter, sans-serif" font-size="10.5" font-weight="700" fill="#4f46e5">Pet Healthcare &amp; Prescription Diet</text>
+
+  <!-- Card 2: F02 -->
+  <rect x="330" y="226" width="234" height="118" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+  <rect x="342" y="238" width="34" height="20" rx="5" fill="#fce7f3"/>
+  <text x="359" y="252" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" font-weight="800" fill="#be185d">F02</text>
+  <text x="383" y="253" font-family="Inter, sans-serif" font-size="13" font-weight="800" fill="#0f172a">정서연 (Seoyeon) · 29</text>
+  <rect x="506" y="238" width="48" height="20" rx="5" fill="#f1f5f9"/>
+  <text x="530" y="252" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#475569">SEC C1</text>
+  <text x="342" y="276" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#334155">Fashion Select-Shop Buying MD</text>
+  <text x="342" y="295" font-family="Inter, sans-serif" font-size="10.5" fill="#64748b">Single 1-Person · Mapo-gu, Seoul</text>
+  <text x="342" y="324" font-family="Inter, sans-serif" font-size="10.5" font-weight="700" fill="#4f46e5">Athleisure &amp; Prestige Color Beauty</text>
+
+  <!-- Card 3: M01 -->
+  <rect x="82" y="358" width="234" height="118" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+  <rect x="94" y="370" width="34" height="20" rx="5" fill="#dbeafe"/>
+  <text x="111" y="384" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" font-weight="800" fill="#1d4ed8">M01</text>
+  <text x="135" y="385" font-family="Inter, sans-serif" font-size="13" font-weight="800" fill="#0f172a">김도현 (Dohyun) · 35</text>
+  <rect x="256" y="370" width="50" height="20" rx="5" fill="#f1f5f9"/>
+  <text x="281" y="384" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#475569">SEC B+</text>
+  <text x="94" y="408" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#334155">Semiconductor R&amp;D Engineer</text>
+  <text x="94" y="427" font-family="Inter, sans-serif" font-size="10.5" fill="#64748b">Married Dual-Income · Bundang</text>
+  <text x="94" y="456" font-family="Inter, sans-serif" font-size="10.5" font-weight="700" fill="#4f46e5">Smart Home Appliances &amp; Craft Beer</text>
+
+  <!-- Card 4: F05 -->
+  <rect x="330" y="358" width="234" height="118" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+  <rect x="342" y="370" width="34" height="20" rx="5" fill="#fce7f3"/>
+  <text x="359" y="384" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" font-weight="800" fill="#be185d">F05</text>
+  <text x="383" y="385" font-family="Inter, sans-serif" font-size="13" font-weight="800" fill="#0f172a">이지원 (Jiwon Lee) · 41</text>
+  <rect x="510" y="370" width="44" height="20" rx="5" fill="#fef3c7"/>
+  <text x="532" y="384" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#b45309">SEC A</text>
+  <text x="342" y="408" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#334155">Conglomerate HR Senior Manager</text>
+  <text x="342" y="427" font-family="Inter, sans-serif" font-size="10.5" fill="#64748b">Working Mom (2 Kids) · Songpa-gu</text>
+  <text x="342" y="456" font-family="Inter, sans-serif" font-size="10.5" font-weight="700" fill="#4f46e5">Premium Meal-Kits &amp; Indoor Laundry</text>
+
+  <!-- Bottom 4D Grounding Banner inside Left Col -->
+  <rect x="82" y="492" width="482" height="120" rx="10" fill="#0f172a"/>
+  <text x="102" y="518" font-family="Inter, sans-serif" font-size="12" font-weight="800" fill="#a5b4fc">4D KOREAN CONSUMER GROUNDING ARCHITECTURE (2021–2026 DRK DATA)</text>
+  <text x="102" y="542" font-family="Inter, sans-serif" font-size="11" fill="#e2e8f0">1. Demographic &amp; Family Life-Stage   2. SEC Income Tier (A+ / A / B+ / B / C1 / C2 / D)</text>
+  <text x="102" y="564" font-family="Inter, sans-serif" font-size="11" fill="#e2e8f0">3. Category Usage &amp; Brand Repertoire 4. Behavioral Decision &amp; Price-Threshold Logic</text>
+  <text x="102" y="592" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#38bdf8">✓ Instant Localization: Click KO · EN · JA · ZH · ID to switch all 30 persona profiles</text>
+
+  <!-- Right Column: Live 1:1 IDI / Mini-FGD Interview Simulator -->
+  <rect x="598" y="142" width="540" height="488" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Persona Profile Header in Chat -->
+  <rect x="616" y="158" width="504" height="74" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+  <circle cx="652" cy="195" r="22" fill="#4f46e5"/>
+  <text x="652" y="200" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" font-weight="800" fill="#ffffff">F01</text>
+  <text x="686" y="182" font-family="Inter, sans-serif" font-size="14" font-weight="800" fill="#0f172a">최유나 (Yuna Choi, 32 · SEC B · Gangnam Fintech PM)</text>
+  <text x="686" y="201" font-family="Inter, sans-serif" font-size="11" fill="#475569">Monthly Household Income: KRW 5.5M–6.99M · Raising 4yo Maltese &amp; 2yo Cat</text>
+  <text x="686" y="219" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#4f46e5">Decision Driver: Vet-verified ingredients, Coupang Rocket Fresh &amp; Kurly repeat buyer</text>
+
+  <!-- Moderator Question Bubble -->
+  <rect x="720" y="250" width="400" height="64" rx="12" fill="#4f46e5"/>
+  <text x="738" y="272" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#c7d2fe">MODERATOR QUESTION (PRE-FIELDWORK HYPOTHESIS TEST)</text>
+  <text x="738" y="292" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#ffffff">"When switching to a new functional pet supplement brand,</text>
+  <text x="738" y="307" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#ffffff">what makes you hesitate at the KRW 48,000 price point?"</text>
+
+  <!-- Synthetic Persona Response Bubble -->
+  <rect x="616" y="330" width="486" height="198" rx="12" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="636" y="354" font-family="Inter, sans-serif" font-size="11.5" font-weight="800" fill="#4f46e5">F01 최유나 (SYNTHETIC PERSONA · GROUNDED IN DRK IDI DATA)</text>
+  <text x="636" y="378" font-family="Inter, sans-serif" font-size="12" fill="#1e293b">"At 48,000 KRW per box, it crosses my impulse-trial threshold (around 32,000 KRW)</text>
+  <text x="636" y="398" font-family="Inter, sans-serif" font-size="12" fill="#1e293b">because I feed both a 4-year-old Maltese with patella sensitivity and a cat.</text>
+  <text x="636" y="418" font-family="Inter, sans-serif" font-size="12" fill="#1e293b">In Korea, unless I see transparent mg-per-chew hydrolysis ratios and real blood-work</text>
+  <text x="636" y="438" font-family="Inter, sans-serif" font-size="12" fill="#1e293b">reviews on Naver Cafe ('강사모'), I won't buy a full month's supply upfront.</text>
+  <text x="636" y="464" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#0f172a">💡 Actionable Fix: Offer a 7-day palatability trial kit (9,900 KRW) or bundle</text>
+  <text x="636" y="484" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#0f172a">with veterinary clinic QR verification to justify the SEC B premium tier."</text>
+  <rect x="636" y="496" width="210" height="22" rx="5" fill="#e0e7ff"/>
+  <text x="741" y="511" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#3730a3">Purchase Intent Score: 3.8 / 5.0</text>
+  <rect x="856" y="496" width="226" height="22" rx="5" fill="#dcfce7"/>
+  <text x="969" y="511" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#166534">Key Barrier: Palatability Risk &amp; Dosage</text>
+
+  <!-- Chat Input Box -->
+  <rect x="616" y="546" width="388" height="44" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="634" y="573" font-family="Inter, sans-serif" font-size="12" fill="#64748b">Ask a custom question or select an FGD discussion probe...</text>
+  <rect x="1014" y="546" width="106" height="44" rx="10" fill="url(#accentGrad)"/>
+  <text x="1067" y="573" text-anchor="middle" font-family="Inter, sans-serif" font-size="12.5" font-weight="700" fill="#ffffff">Run Probe →</text>
+
+  <text x="616" y="612" font-family="Inter, sans-serif" font-size="10.5" font-weight="600" fill="#64748b">⚡ Built-in Simulation Engine + Optional Local Ollama (Qwen2.5 / Llama-3.1) &amp; Cloud LLM API</text>
+</svg>

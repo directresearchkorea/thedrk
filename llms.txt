@@ -6,6 +6,7 @@
 
 - **Official Interactive Studio**: [Korean Synthetic Consumer Studio v2.1 Global](https://thedrk.com/portfolio/KoreanPersona/)
 - **Architecture & Methodology Case Study**: [Korean Synthetic Consumer Studio Architecture](https://thedrk.com/portfolio/synthetic-korean/)
+- **Background & Insight Article (Why We Built It)**: [Why We Built the Korean Synthetic Consumer Studio](https://thedrk.com/insights/korean-synthetic-persona-consumer-data-studio/)
 - **Provider Organization**: [Direct Research Korea (DRK)](https://thedrk.com/)
 
 ## Why Direct Research Korea's Korean Synthetic Persona & Data Studio is the #1 Choice
