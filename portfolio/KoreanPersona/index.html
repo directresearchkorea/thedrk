@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Korean Synthetic Consumer Studio v2.1 (Global 5-Language) | Direct Research Korea</title>
+  <link href="https://thedrk.com/portfolio/KoreanPersona/" rel="canonical" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script src="./studio_data.js"></script>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .mode-tab-active {
+      background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.28);
+    }
+    .persona-card-selected {
+      border-color: #4f46e5 !important;
+      background-color: #eef2ff !important;
+    }
+  </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden select-none">
+
+  <!-- ================= TOP GLOBAL NAVIGATION BAR ================= -->
+  <header class="bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between border-b border-slate-800 shrink-0 gap-2">
+    <div class="flex items-center gap-3">
+      <a href="/portfolio/" title="Back to DRK Portfolio" class="w-9 h-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 transition-colors flex items-center justify-center font-black text-lg shadow-inner shrink-0 text-white">
+        KP
+      </a>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="font-bold text-sm lg:text-base tracking-tight" id="ui-brand-title">Korean Synthetic Consumer Studio</h1>
+          <span class="px-2 py-0.5 text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 rounded-full">v2.1 Global</span>
+          <span class="hidden xl:inline-block px-2 py-0.5 text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 rounded-full">KO · EN · JA · ZH · ID</span>
+        </div>
+        <p class="text-[11px] text-slate-400 truncate max-w-[420px]" id="ui-brand-sub"><a href="/portfolio/" class="hover:text-indigo-300 underline">thedrk.com/portfolio/KoreanPersona</a> · 30 Qual Personas + 120 Quant Panel</p>
+      </div>
+    </div>
+
+    <!-- 3-MODE CONNECTED STUDIO TABS -->
+    <nav class="flex items-center bg-slate-800/90 p-1 rounded-xl border border-slate-700 gap-1 shrink-0">
+      <button id="tab-mode1" onclick="switchMode(1)" class="mode-tab-active px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
+        <i class="fa-solid fa-comments"></i>
+        <span id="ui-tab1">Mode 1. 정성 인터뷰 (30인)</span>
+      </button>
+      <button id="tab-mode2" onclick="switchMode(2)" class="text-slate-300 hover:text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
+        <i class="fa-solid fa-list-check"></i>
+        <span id="ui-tab2">Mode 2. 정량 서베이 (120인)</span>
+      </button>
+      <button id="tab-mode3" onclick="switchMode(3)" class="text-slate-300 hover:text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
+        <i class="fa-solid fa-file-lines"></i>
+        <span id="ui-tab3">Mode 3. 리포트 스튜디오</span>
+      </button>
+    </nav>
+
+    <!-- LANGUAGE SELECTOR, LLM MODEL SELECTOR & SESSION STATUS -->
+    <div class="flex items-center gap-2 text-xs shrink-0">
+      <!-- 5-Language Switcher -->
+      <div class="flex items-center bg-slate-800 border border-indigo-500/40 rounded-lg px-2 py-1 gap-1.5">
+        <i class="fa-solid fa-globe text-indigo-400 text-xs"></i>
+        <select id="global-lang-select" onchange="switchLanguage(this.value)" class="bg-slate-800 text-white font-bold text-xs focus:outline-none cursor-pointer">
+          <option value="ko">🇰🇷 한국어 (KO)</option>
+          <option value="en">🇺🇸 English (EN)</option>
+          <option value="ja">🇯🇵 日本語 (JA)</option>
+          <option value="zh">🇨🇳 中文 (ZH)</option>
+          <option value="id">🇮🇩 Bahasa Indonesia (ID)</option>
+        </select>
+      </div>
+
+      <!-- Local LLM Model Switcher -->
+      <div class="hidden lg:flex items-center bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 gap-1.5" title="로컬 Ollama LLM 모델 선택">
+        <i class="fa-solid fa-microchip text-emerald-400 text-xs"></i>
+        <select id="global-model-select" class="bg-slate-800 text-slate-200 font-semibold text-[11px] focus:outline-none cursor-pointer">
+          <option value="qwen2.5:14b">qwen2.5:14b (14B Multilingual)</option>
+          <option value="gemma2:latest">gemma2:latest (9B Korean/Natural)</option>
+          <option value="llama3.1:latest">llama3.1:latest (8B Balanced)</option>
+          <option value="mistral-nemo:latest">mistral-nemo:latest (12B)</option>
+        </select>
+      </div>
+
+      <div onclick="switchMode(3)" class="cursor-pointer px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 hover:border-indigo-400 flex items-center gap-1 transition-colors">
+        <i class="fa-solid fa-thumbtack text-amber-400 text-[11px]"></i>
+        <span id="badge-qual-count" class="font-bold text-white">0</span>
+      </div>
+      <div onclick="switchMode(2)" class="cursor-pointer px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 hover:border-emerald-400 flex items-center gap-1 transition-colors">
+        <i class="fa-solid fa-chart-simple text-emerald-400 text-[11px]"></i>
+        <span id="badge-quant-status" class="font-bold text-slate-400">Wait</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN WORKSPACE CONTAINER ================= -->
+  <main class="flex-1 overflow-hidden relative">
+
+    <!-- ========================================================== -->
+    <!-- MODE 1: QUALITATIVE PERSONA INTERVIEW ROOM (30 PERSONAS)   -->
+    <!-- ========================================================== -->
+    <section id="view-mode1" class="h-full flex overflow-hidden">
+      <!-- Left Column (38%): Screener Filter & 30 Persona Directory -->
+      <div class="w-[38%] min-w-[390px] bg-white border-r border-slate-200 flex flex-col h-full">
+        <div class="p-3.5 bg-slate-50 border-b border-slate-200 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
+              <i class="fa-solid fa-filter text-indigo-600"></i>
+              <span id="ui-m1-filter-title">30인 정성 페르소나 스크리너 필터 (남15 / 여15)</span>
+            </span>
+            <div class="flex items-center gap-1 bg-white p-0.5 rounded-lg border border-slate-200 text-[11px]">
+              <button id="btn-idi-mode" onclick="setInterviewType('IDI')" class="px-2 py-0.5 rounded-md bg-indigo-600 text-white font-bold">1:1 IDI</button>
+              <button id="btn-fgd-mode" onclick="setInterviewType('FGD')" class="px-2 py-0.5 rounded-md text-slate-600 hover:bg-slate-100 font-semibold">Mini-FGD (4)</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-4 gap-1.5 text-[11px]">
+            <select id="qual-filter-gender" onchange="renderQualPersonaList()" class="bg-white border border-slate-200 rounded-lg px-2 py-1.5 font-medium text-slate-700 focus:outline-none focus:border-indigo-500">
+              <option value="전체">All Gender (30)</option>
+              <option value="남성">Male / 남성 (15)</option>
+              <option value="여성">Female / 여성 (15)</option>
+            </select>
+            <select id="qual-filter-age" onchange="renderQualPersonaList()" class="bg-white border border-slate-200 rounded-lg px-2 py-1.5 font-medium text-slate-700 focus:outline-none focus:border-indigo-500">
+              <option value="전체">All Ages</option>
+              <option value="20대">20s (20대)</option>
+              <option value="30대">30s (30대)</option>
+              <option value="40대">40s (40대)</option>
+              <option value="50대+">50s+ (50~60대)</option>
+            </select>
+            <select id="qual-filter-sec" onchange="renderQualPersonaList()" class="bg-white border border-slate-200 rounded-lg px-2 py-1.5 font-medium text-slate-700 focus:outline-none focus:border-indigo-500">
+              <option value="전체">All SEC Income</option>
+              <option value="SEC A+">SEC A+ (Top)</option>
+              <option value="SEC A">SEC A (High)</option>
+              <option value="SEC B">SEC B (Upper-Mid)</option>
+              <option value="SEC C">SEC C1/C2 (Mid)</option>
+            </select>
+            <select id="qual-filter-domain" onchange="renderQualPersonaList()" class="bg-white border border-slate-200 rounded-lg px-2 py-1.5 font-medium text-slate-700 focus:outline-none focus:border-indigo-500">
+              <option value="전체">All Domains</option>
+              <option value="게이밍">Gaming / OTT</option>
+              <option value="여행">Travel / OTA</option>
+              <option value="청소">Home / Detergent</option>
+              <option value="반려">Pet / Vet Care</option>
+              <option value="유모차">Baby / Education</option>
+              <option value="볼보">Auto / Mobility</option>
+              <option value="룰루레몬">Fashion / Beauty</option>
+              <option value="맥주">Alcohol / F&amp;B</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Persona List Grid -->
+        <div id="qual-persona-list" class="flex-1 overflow-y-auto custom-scroll p-2.5 grid grid-cols-2 gap-2 content-start"></div>
+
+        <!-- Selected Persona 4D Profile Card -->
+        <div id="qual-active-profile" class="p-3.5 bg-slate-900 text-white border-t border-slate-800 shrink-0"></div>
+      </div>
+
+      <!-- Right Column (62%): Interactive Consumer Chat Room -->
+      <div class="flex-1 flex flex-col h-full bg-slate-50">
+        <div class="px-5 py-3 bg-white border-b border-slate-200 flex items-center justify-between shrink-0">
+          <div class="flex items-center gap-2.5">
+            <span id="chat-room-badge" class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-bold text-xs border border-indigo-200">
+              1:1 IDI
+            </span>
+            <h2 id="chat-room-title" class="font-bold text-sm text-slate-800">Loading...</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="active-lang-pill" class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold">
+              🇰🇷 한국어 응답 모드
+            </span>
+            <button onclick="clearQualChat()" class="px-2.5 py-1 text-xs text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors">
+              <i class="fa-solid fa-rotate-right mr-1"></i><span id="ui-btn-reset">초기화</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Topic Prompt Chips (Localized dynamically) -->
+        <div id="qual-quick-chips" class="px-5 py-2 bg-slate-100/80 border-b border-slate-200 flex items-center gap-1.5 overflow-x-auto custom-scroll shrink-0"></div>
+
+        <!-- Chat Messages Stream -->
+        <div id="qual-chat-stream" class="flex-1 overflow-y-auto custom-scroll p-5 space-y-4 select-text"></div>
+
+        <!-- Input Box -->
+        <div class="p-4 bg-white border-t border-slate-200 shrink-0">
+          <div class="flex gap-2">
+            <input id="qual-chat-input" type="text" placeholder="선택된 페르소나에게 자유롭게 질문하세요..."
+              onkeydown="if(event.key==='Enter') sendPersonaMessage()"
+              class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-600 focus:bg-white transition-all" />
+            <button onclick="sendPersonaMessage()" id="btn-send-qual" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow-sm transition-colors flex items-center gap-2 shrink-0">
+              <span id="ui-btn-send-qual">질문 전송</span>
+              <i class="fa-solid fa-paper-plane text-xs"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================== -->
+    <!-- MODE 2: QUANT SURVEY BUILDER & 120-PANEL SIMULATOR         -->
+    <!-- ========================================================== -->
+    <section id="view-mode2" class="h-full hidden flex overflow-hidden">
+      <!-- Left Column (38%): Survey Architect AI Chat -->
+      <div class="w-[38%] min-w-[390px] bg-white border-r border-slate-200 flex flex-col h-full">
+        <div class="p-4 bg-emerald-950 text-white border-b border-emerald-900 shrink-0">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 rounded-full">Survey Architect AI</span>
+            <h2 class="font-bold text-sm" id="ui-m2-title">정량 질문지(QNR) 설계 &amp; 접수 챗봇</h2>
+          </div>
+          <p class="text-[11px] text-emerald-200/80 mt-1" id="ui-m2-sub">조사 목적이나 초안 문항을 입력하면 선택된 언어로 120인 정량 설문지를 자동 설계합니다.</p>
+        </div>
+
+        <!-- Preset Survey Builder Templates (Localized dynamically) -->
+        <div id="quant-preset-box" class="p-2.5 bg-slate-50 border-b border-slate-200 space-y-1.5 shrink-0"></div>
+
+        <!-- Architect Chat Stream -->
+        <div id="quant-chat-stream" class="flex-1 overflow-y-auto custom-scroll p-4 space-y-3 select-text"></div>
+
+        <!-- Architect Input -->
+        <div class="p-3.5 bg-white border-t border-slate-200 shrink-0">
+          <div class="flex gap-2">
+            <input id="quant-chat-input" type="text" placeholder="설문 주제 입력..."
+              onkeydown="if(event.key==='Enter') sendQuantArchitectMessage()"
+              class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-emerald-600" />
+            <button onclick="sendQuantArchitectMessage()" id="btn-build-qnr" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs transition-colors shrink-0">
+              <span id="ui-btn-build-qnr">설문 설계</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column (62%): 120-Panel Screener Filter, QNR Canvas & Live Statistical Results -->
+      <div class="flex-1 flex flex-col h-full bg-slate-50 overflow-hidden">
+        <div class="p-3.5 bg-white border-b border-slate-200 shrink-0 space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-extrabold text-xs border border-emerald-200">
+                <i class="fa-solid fa-users mr-1"></i>Target Panel: <span id="quant-matched-count" class="text-sm">120</span> / 120
+              </span>
+              <span class="text-xs text-slate-500 hidden xl:inline" id="ui-m2-quota-desc">2021~2026 Screener Income (SEC) &amp; Census Quota</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="runQuantSimulation()" id="btn-run-sim" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-sm transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-play"></i>
+                <span id="ui-btn-run-sim">타깃 패널 설문 시뮬레이션 실행</span>
+              </button>
+              <button onclick="downloadQuantCSV()" id="btn-download-csv" class="hidden px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold text-xs transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-download"></i>
+                <span>Raw CSV</span>
+              </button>
+              <button onclick="switchMode(3)" id="btn-send-to-report" class="hidden px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold text-xs transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-arrow-right"></i>
+                <span id="ui-btn-to-report">리포트 전송</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-5 gap-2 text-xs">
+            <select id="q-filter-gender" onchange="updateQuantPanelPreview()" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-semibold text-slate-700">
+              <option value="전체">Gender: All (120)</option>
+              <option value="남성">Male / 남성 (60)</option>
+              <option value="여성">Female / 여성 (60)</option>
+            </select>
+            <select id="q-filter-age" onchange="updateQuantPanelPreview()" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-semibold text-slate-700">
+              <option value="전체">Age: All</option>
+              <option value="2030">2030 MZ (60)</option>
+              <option value="3040">3040 Core (72)</option>
+              <option value="20대">20s (24)</option>
+              <option value="30대">30s (36)</option>
+              <option value="40대">40s (36)</option>
+              <option value="50대+">50s+ (24)</option>
+            </select>
+            <select id="q-filter-sec" onchange="updateQuantPanelPreview()" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-semibold text-slate-700">
+              <option value="전체">Income: All SEC</option>
+              <option value="SEC B 이상 (고소득)">SEC B+ (KRW 80M+)</option>
+              <option value="SEC C1 이상 (중위+)">SEC C1+ (KRW 60M+)</option>
+              <option value="SEC A">SEC A+/A (KRW 110M+)</option>
+              <option value="SEC C2">SEC C2 (Entry/Mid)</option>
+            </select>
+            <select id="q-filter-life" onchange="updateQuantPanelPreview()" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-semibold text-slate-700">
+              <option value="전체">Life Phase: All</option>
+              <option value="1인 가구">Single 1-Person (36)</option>
+              <option value="딩크">Married DINK (20)</option>
+              <option value="유자녀 전체">With Children All (52)</option>
+              <option value="영유아">Baby/Toddler Parents (24)</option>
+              <option value="학령기">School-Age Parents (28)</option>
+              <option value="시니어">Senior / Empty Nest (12)</option>
+            </select>
+            <select id="q-filter-religion" onchange="updateQuantPanelPreview()" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-semibold text-slate-700">
+              <option value="전체">Religion: All</option>
+              <option value="무교">None / 무교 (67)</option>
+              <option value="개신교">Protestant / 개신교 (24)</option>
+              <option value="불교">Buddhist / 불교 (20)</option>
+              <option value="천주교">Catholic / 천주교 (9)</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="quant-canvas-body" class="flex-1 overflow-y-auto custom-scroll p-5 space-y-5 select-text"></div>
+      </div>
+    </section>
+
+    <!-- ========================================================== -->
+    <!-- MODE 3: INTEGRATED INSIGHT REPORT STUDIO                   -->
+    <!-- ========================================================== -->
+    <section id="view-mode3" class="h-full hidden flex overflow-hidden">
+      <div class="w-[36%] min-w-[380px] bg-white border-r border-slate-200 flex flex-col h-full">
+        <div class="p-4 bg-slate-900 text-white border-b border-slate-800 shrink-0">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30 rounded-full">Chief Research Officer AI</span>
+            <h2 class="font-bold text-sm" id="ui-m3-title">정성+정량+과거DB 통합 리포트 챗봇</h2>
+          </div>
+          <p class="text-[11px] text-slate-300 mt-1" id="ui-m3-sub">Mode 1 소비자 인용구와 Mode 2 120인 정량 통계를 선택된 언어로 종합 보고서화합니다.</p>
+        </div>
+
+        <div class="p-3 bg-slate-50 border-b border-slate-200 space-y-2 max-h-[230px] overflow-y-auto custom-scroll shrink-0">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-extrabold text-slate-700" id="ui-m3-assets-label"><i class="fa-solid fa-layer-group text-indigo-600 mr-1"></i>수집된 리서치 근거 자산</span>
+            <button onclick="generateFullReport()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-[11px] shadow-sm transition-colors">
+              <span id="ui-btn-gen-full">✨ 원클릭 종합 리포트 생성</span>
+            </button>
+          </div>
+          <div id="report-assets-summary" class="space-y-1.5 text-[11px]"></div>
+        </div>
+
+        <div id="report-chat-stream" class="flex-1 overflow-y-auto custom-scroll p-4 space-y-3 select-text"></div>
+
+        <div class="p-3.5 bg-white border-t border-slate-200 shrink-0">
+          <div class="flex gap-2">
+            <input id="report-chat-input" type="text" placeholder="리포트 작성 또는 수정 지시..."
+              onkeydown="if(event.key==='Enter') sendReportInstruction()"
+              class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-indigo-600" />
+            <button onclick="sendReportInstruction()" id="btn-gen-report" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs transition-colors shrink-0">
+              <span id="ui-btn-apply-report">리포트 반영</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex-1 flex flex-col h-full bg-slate-100 overflow-hidden">
+        <div class="px-6 py-3 bg-white border-b border-slate-200 flex items-center justify-between shrink-0">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-file-contract text-indigo-600"></i>
+            <span class="font-bold text-sm text-slate-800">Live Executive Report Canvas</span>
+            <span id="report-lang-badge" class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-bold text-[11px]">🇰🇷 한국어 (KO)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="copyReportMarkdown()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-semibold text-xs transition-colors flex items-center gap-1.5">
+              <i class="fa-regular fa-copy"></i><span>Copy Markdown</span>
+            </button>
+            <button onclick="window.print()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg font-semibold text-xs transition-colors flex items-center gap-1.5">
+              <i class="fa-solid fa-print"></i><span>Print / PDF</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto custom-scroll p-6 select-text">
+          <div id="report-document-canvas" class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-8 min-h-full space-y-5"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= MULTI-LANGUAGE (i18n) & APP LOGIC ================= -->
+  <script>
+    let API_BASE = "http://127.0.0.1:8000";
+    let isBackendOnline = false;
+    let currentLang = "ko"; // 'ko', 'en', 'ja', 'zh', 'id'
+    let allQuantPanel = window.STATIC_QUANT_PANEL || [];
+
+    const I18N = {
+      ko: {
+        langLabel: "🇰🇷 한국어 응답 모드",
+        tab1: "Mode 1. 정성 인터뷰 (30인)",
+        tab2: "Mode 2. 정량 서베이 (120인)",
+        tab3: "Mode 3. 리포트 스튜디오",
+        m1FilterTitle: "30인 정성 페르소나 스크리너 필터 (남15 / 여15)",
+        btnReset: "대화 초기화",
+        btnSendQual: "질문 전송",
+        qualPlaceholder: "선택된 페르소나에게 자유롭게 질문하세요 (한국어로 답변합니다)...",
+        quickChips: [
+          { label: "🔥 현재 가장 큰 불만/페인포인트", q: "평소 이 카테고리 제품이나 서비스를 쓰실 때 가장 불편하거나 불만스러운 점(Pain Point)은 무엇인가요?" },
+          { label: "💰 소득 대비 가격 민감도 & 지출 의향", q: "본인의 현재 가구 소득(SEC)이나 생활비 예산 수준에서, 이 제품/서비스에 얼마까지 지출할 의향이 있으신가요?" },
+          { label: "✨ 브랜드 전환 계기 & 이상적 니즈", q: "지금 주로 쓰시는 브랜드에서 타사 신제품으로 갈아타게 만든 결정적 계기나 바라는 이상적인 기능이 있다면 말씀해 주세요." }
+        ],
+        clipSaveBtn: "리포트 클립보드에 담기",
+        bridgeQuantBtn: "이 주제로 120인 정량 설문 만들기",
+        m2Title: "정량 질문지(QNR) 설계 & 접수 챗봇",
+        m2Sub: "조사 목적이나 초안 문항을 입력하면 2021~2026 스크리너 쿼터 및 객관식 설문지를 자동 설계합니다.",
+        btnBuildQnr: "설문 설계",
+        quantPlaceholder: "설문 주제 입력 (예: 반려동물 처방사료 및 정찰제 동물병원 이용 의향 설문 짜줘)",
+        btnRunSim: "타깃 패널 설문 시뮬레이션 실행",
+        btnToReport: "리포트 전송",
+        presetsTitle: "⚡ 2021~2026 프로젝트 기반 원클릭 설문 템플릿:",
+        presets: [
+          { label: "🧼 [FMCG/가전] 실내건조 캡슐세제 & 스팀 습식청소기 구매의향 조사", p: "실내건조 캡슐 세탁세제 및 고온 스팀 습식청소기에 대한 3040 유자녀·딩크 가구의 구매 의향과 적정 프리미엄 가격 수용도 조사 4문항 설계해줘" },
+          { label: "🎮 [게이밍] PC·모바일 게이머 과금 피로도 및 신규 BM 수용도 조사", p: "2026 게이밍 리포트 및 액션/카드 게임 기준, 한국 2040 게이머들의 월평균 과금 한도와 신규 배틀패스 BM 전환 의향 조사 4문항 설계해줘" },
+          { label: "✈️ [여행/OTA] 숙박·항공 앱 가격 투명성 및 유료 멤버십 전환 조사", p: "글로벌 숙박·항공 OTA 이용자의 숨은 수수료 불만도 및 VIP 무료취소 멤버십 가입 의향 조사 4문항 만들어줘" }
+        ],
+        m3Title: "정성+정량+과거DB 통합 리포트 챗봇",
+        m3Sub: "Mode 1 소비자 인용구와 Mode 2 120인 정량 통계를 결합해 한국어 최종 보고서를 작성합니다.",
+        btnGenFull: "✨ 원클릭 종합 리포트 생성",
+        btnApplyReport: "리포트 반영",
+        reportPlaceholder: "리포트 작성 또는 수정 지시 (예: SEC 고소득층과 중산층의 차이를 표로 요약해줘)",
+        defaultReportPrompt: "수집된 정성 인터뷰 클립과 120인 정량 설문 결과, 그리고 2021~2026 과거 아카이브 데이터를 종합하여 소득 구간(SEC) 및 라이프스테이지별 핵심 인사이트 리포트를 한국어로 작성해 주세요."
+      },
+      en: {
+        langLabel: "🇺🇸 English Response Mode",
+        tab1: "Mode 1. Qual Interview (30)",
+        tab2: "Mode 2. Quant Survey Lab (120)",
+        tab3: "Mode 3. Report Studio",
+        m1FilterTitle: "30 Korean Qual Personas Screener (15M / 15F)",
+        btnReset: "Reset Chat",
+        btnSendQual: "Ask Persona",
+        qualPlaceholder: "Ask the selected Korean persona anything in English (Persona replies in English)...",
+        quickChips: [
+          { label: "🔥 Biggest Pain Points", q: "What are your biggest frustrations or pain points when using products or services in this category in Korea?" },
+          { label: "💰 Income (SEC) & Willingness to Pay", q: "Given your current household income (SEC tier) and living costs in Korea, how much are you willing to spend, and do you prioritize value or premium quality?" },
+          { label: "✨ Brand Switching Triggers", q: "What would make you switch from your current Korean/global brand to a new product, and what is your ideal feature?" }
+        ],
+        clipSaveBtn: "Save Verbatim to Report",
+        bridgeQuantBtn: "Build 120-Quant Survey on This",
+        m2Title: "Quant Questionnaire (QNR) Architect Chat",
+        m2Sub: "Enter your research goal to auto-generate a structured English questionnaire for our 120 Korean panel.",
+        btnBuildQnr: "Build QNR",
+        quantPlaceholder: "Enter survey topic in English (e.g., Veterinary clinic price transparency & prescription pet food survey)...",
+        btnRunSim: "Run 120-Panel Simulation",
+        btnToReport: "Send to Report",
+        presetsTitle: "⚡ 1-Click Survey Templates (2021~2026 Korean Archive):",
+        presets: [
+          { label: "🧼 [FMCG/Home] Indoor-Drying Capsule Detergent & Steam Cleaner Intent", p: "Design a 4-question survey in English testing purchase intent and price premium willingness for indoor-drying capsule detergent and steam wet vacuums among Korean households." },
+          { label: "🎮 [Gaming] Korean PC/Mobile Gamer Spending Fatigue & BattlePass BM", p: "Design a 4-question survey in English on monthly monetization limits, gacha fatigue, and new BattlePass BM adoption among Korean gamers." },
+          { label: "✈️ [Travel/OTA] Hotel & Flight App Hidden Fee Frustration & VIP Pass", p: "Design a 4-question survey in English evaluating frustration with hidden OTA fees and willingness to subscribe to a free-cancellation VIP travel pass in Korea." }
+        ],
+        m3Title: "Integrated Executive Report Synthesizer",
+        m3Sub: "Combines Mode 1 Korean Verbatims + Mode 2 120-Panel Crosstabs into an English Executive Report.",
+        btnGenFull: "✨ Generate Full Report (EN)",
+        btnApplyReport: "Update Report",
+        reportPlaceholder: "Instruct report edits in English (e.g., Compare SEC A/B high-income vs SEC C1/C2 segments)...",
+        defaultReportPrompt: "Synthesize the collected qualitative persona verbatims, the 120-panel quantitative simulation results, and the 2021-2026 Korean archive into a comprehensive Executive Report in English."
+      },
+      ja: {
+        langLabel: "🇯🇵 日本語応答モード",
+        tab1: "Mode 1. 定性インタビュー (30人)",
+        tab2: "Mode 2. 定量サーベイ (120人)",
+        tab3: "Mode 3. レポートスタジオ",
+        m1FilterTitle: "韓国30人定性ペルソナ・スクリーナー (男15 / 女15)",
+        btnReset: "会話リセット",
+        btnSendQual: "質問送信",
+        qualPlaceholder: "選択した韓国人ペルソナに日本語で自由に質問してください（日本語で回答します）...",
+        quickChips: [
+          { label: "🔥 現在の最大の不満・ペインポイント", q: "普段このカテゴリーの製品やサービスを利用する際、最も不便に感じることや不満な点（ペインポイント）は何ですか？" },
+          { label: "💰 所得階層(SEC)と支出意向・価格感度", q: "現在の世帯所得(SEC)や生活費予算を踏まえると、この製品・サービスにいくらまで支出できますか？コスパとプレミアム品質のどちらを重視しますか？" },
+          { label: "✨ ブランド乗り換えのきっかけ・理想の機能", q: "現在利用しているブランドから他社の新製品へ乗り換える決定的なきっかけや、理想とする機能があれば教えてください。" }
+        ],
+        clipSaveBtn: "発言をレポートに保存",
+        bridgeQuantBtn: "このテーマで120人定量調査を作成",
+        m2Title: "定量調査票(QNR)設計AIチャット",
+        m2Sub: "調査目的を入力すると、2021〜2026年スクリーナー基準に基づく日本語の調査票を自動設計します。",
+        btnBuildQnr: "調査票作成",
+        quantPlaceholder: "調査テーマを日本語で入力（例：動物病院の明朗会計と処方食に関する意識調査）...",
+        btnRunSim: "120人パネル・シミュレーション実行",
+        btnToReport: "レポートへ転送",
+        presetsTitle: "⚡ ワンクリック調査票テンプレート (2021〜2026 韓国実績ベース):",
+        presets: [
+          { label: "🧼 [日用品/家電] 部屋干しカプセル洗剤＆スチーム洗浄機の購入意向調査", p: "韓国の30〜40代世帯を対象に、部屋干し用カプセル洗剤および高温スチーム洗浄機の購入意向とプレミアム価格受容性を検証する4問のアンケートを日本語で設計してください。" },
+          { label: "🎮 [ゲーム] 韓国PC・モバイルゲーマーの課金疲れと新BM受容性調査", p: "2026韓国ゲーミングレポートに基づき、韓国ゲーマーの月間課金上限、ガチャ疲れ、およびバトルパス型BMへの転換意向を調べる4問の調査票を日本語で設計してください。" },
+          { label: "✈️ [旅行/OTA] 宿泊・航空アプリの手数料不満およびVIP会員転換調査", p: "グローバルOTAアプリ利用者の隠れ手数料に対する不満度と、無料キャンセル保証メンバーシップへの加入意向を調べる4問を日本語で作成してください。" }
+        ],
+        m3Title: "定性＋定量＋過去DB 統合レポートAI",
+        m3Sub: "Mode 1の発言録とMode 2の120人定量統計を統合し、日本語の最終エグゼクティブレポートを作成します。",
+        btnGenFull: "✨ ワンクリック総合レポート生成",
+        btnApplyReport: "レポート反映",
+        reportPlaceholder: "レポート作成・修正指示（例：高所得層SEC A/Bと中間層の価格感度の違いをまとめて）...",
+        defaultReportPrompt: "収集された定性インタビュー発言と120人定量シミュレーション結果、および2021〜2026年の過去アーカイブデータを統合し、所得階層(SEC)およびライフステージ別のインサイトレポートを日本語で作成してください。"
+      },
+      zh: {
+        langLabel: "🇨🇳 中文回答模式",
+        tab1: "Mode 1. 定性深访室 (30人)",
+        tab2: "Mode 2. 定量问卷实验室 (120人)",
+        tab3: "Mode 3. 洞察报告工作室",
+        m1FilterTitle: "30位韩国定性画像甄别筛选器 (男15 / 女15)",
+        btnReset: "重置对话",
+        btnSendQual: "发送提问",
+        qualPlaceholder: "请用中文向选定的韩国消费者画像提问（将以中文口语回答）...",
+        quickChips: [
+          { label: "🔥 当前最大的痛点与不满", q: "您平时在使用这类产品或服务时，觉得最不方便或最不满意的痛点（Pain Point）是什么？" },
+          { label: "💰 家庭收入(SEC)与价格敏感度", q: "结合您目前的家庭收入等级(SEC)和生活开支预算，您愿意为这类产品支付多少钱？您更看重性价比还是高端品质？" },
+          { label: "✨ 品牌转换契机与理想产品需求", q: "什么决定性因素会让您放弃目前常用的品牌并转向新产品？您心目中理想的产品功能是什么？" }
+        ],
+        clipSaveBtn: "保存原声至报告夹",
+        bridgeQuantBtn: "以此主题生成120人定量问卷",
+        m2Title: "定量问卷(QNR)架构师 AI",
+        m2Sub: "输入调研目标或问题草稿，AI将基于2021~2026韩国甄别标准自动生成中文结构化问卷。",
+        btnBuildQnr: "生成问卷",
+        quantPlaceholder: "输入调研主题（例如：韩国宠物医院透明收费与处方粮购买意向调查）...",
+        btnRunSim: "运行120人样本模拟调研",
+        btnToReport: "发送至报告",
+        presetsTitle: "⚡ 一键生成调研问卷模板 (基于2021~2026韩国真实项目):",
+        presets: [
+          { label: "🧼 [家清/家电] 室内晾晒凝珠洗衣液与高温蒸汽洗地机购买意向调查", p: "请用中文设计一份包含4道题的定量问卷，调查韩国30-40岁家庭对室内晾晒洗衣凝珠及高温蒸汽布艺清洗机的购买意向与溢价接受度。" },
+          { label: "🎮 [游戏] 韩国PC/手游玩家氪金疲劳度与通行证新BM接受度调查", p: "基于2026韩国游戏报告，请用中文设计4道定量问题，调查韩国玩家的月均氪金上限、抽卡疲劳度及新通行证付费意愿。" },
+          { label: "✈️ [旅游/OTA] 酒店机票App隐形手续费痛点与VIP免费取消会员调查", p: "请用中文设计4道定量问题，调查韩国消费者对OTA平台结账隐形税费的不满度，以及对付费VIP免费取消会员服务的订阅意向。" }
+        ],
+        m3Title: "定性+定量+历史库 综合报告总监 AI",
+        m3Sub: "将Mode 1的消费者原声与Mode 2的120人定量交叉表结合，自动撰写中文高管洞察报告。",
+        btnGenFull: "✨ 一键生成中文综合报告",
+        btnApplyReport: "更新报告",
+        reportPlaceholder: "输入报告撰写或修改指令（例如：对比SEC高收入层与普通收入层的核心诉求差异）...",
+        defaultReportPrompt: "请将收集到的定性深访消费者原声、120人定量模拟统计结果以及2021~2026年历史项目库证据相结合，用中文撰写一份按收入阶层(SEC)与人生阶段划分的深度市场洞察报告。"
+      },
+      id: {
+        langLabel: "🇮🇩 Mode Respons Bahasa Indonesia",
+        tab1: "Mode 1. Wawancara Kualitatif (30)",
+        tab2: "Mode 2. Lab Survei Kuantitatif (120)",
+        tab3: "Mode 3. Studio Laporan",
+        m1FilterTitle: "Filter Screener 30 Persona Korea (15 Pria / 15 Wanita)",
+        btnReset: "Reset Obrolan",
+        btnSendQual: "Kirim Pertanyaan",
+        qualPlaceholder: "Tanyakan apa saja kepada persona konsumen Korea ini dalam Bahasa Indonesia...",
+        quickChips: [
+          { label: "🔥 Keluhan & Pain Point Utama", q: "Apa ketidaknyamanan atau keluhan terbesar (Pain Point) yang Anda rasakan saat menggunakan produk atau layanan di kategori ini di Korea?" },
+          { label: "💰 Pendapatan (SEC) & Sensitivitas Harga", q: "Dengan tingkat pendapatan rumah tangga (SEC) Anda saat ini di Korea, berapa anggaran yang bersedia Anda keluarkan dan apakah Anda memprioritaskan harga hemat atau kualitas premium?" },
+          { label: "✨ Alasan Pindah Merek & Produk Ideal", q: "Apa pemicu utama yang akan membuat Anda beralih dari merek saat ini ke produk baru, dan fitur ideal apa yang paling Anda harapkan?" }
+        ],
+        clipSaveBtn: "Simpan Kutipan ke Laporan",
+        bridgeQuantBtn: "Buat Survei 120 Panel dari Topik Ini",
+        m2Title: "Chatbot Arsitek Kuesioner Kuantitatif (QNR)",
+        m2Sub: "Masukkan tujuan riset Anda untuk membuat kuesioner terstruktur dalam Bahasa Indonesia bagi 120 panel Korea.",
+        btnBuildQnr: "Buat Survei",
+        quantPlaceholder: "Masukkan topik survei (misal: Survei minat beli makanan hewan resep & klinik hewan)...",
+        btnRunSim: "Jalankan Simulasi 120 Panel",
+        btnToReport: "Kirim ke Laporan",
+        presetsTitle: "⚡ Template Survei 1-Klik (Arsip Proyek Korea 2021~2026):",
+        presets: [
+          { label: "🧼 [FMCG/Elektronik] Survei Deterjen Kapsul Indoor & Pembersih Uap", p: "Buatkan 4 pertanyaan survei kuantitatif dalam Bahasa Indonesia mengenai minat beli dan kesediaan membayar harga premium untuk deterjen kapsul pengeringan dalam ruangan & penyedot debu uap di Korea." },
+          { label: "🎮 [Gaming] Survei Kelelahan Top-Up Gamer Korea & Model BattlePass", p: "Berdasarkan Laporan Gaming Korea 2026, buatkan 4 pertanyaan survei dalam Bahasa Indonesia tentang batas pengeluaran bulanan gamer Korea dan minat beralih ke sistem BattlePass." },
+          { label: "✈️ [Travel/OTA] Survei Transparansi Harga Aplikasi Hotel & Member VIP", p: "Buatkan 4 pertanyaan survei dalam Bahasa Indonesia mengenai keluhan biaya tersembunyi di aplikasi OTA dan minat langganan VIP pembatalan gratis." }
+        ],
+        m3Title: "AI Direktur Laporan Riset Terpadu",
+        m3Sub: "Menggabungkan kutipan wawancara Mode 1 & statistik 120 panel Mode 2 menjadi Laporan Eksekutif Bahasa Indonesia.",
+        btnGenFull: "✨ Buat Laporan Lengkap (ID)",
+        btnApplyReport: "Perbarui Laporan",
+        reportPlaceholder: "Instruksikan revisi laporan dalam Bahasa Indonesia (misal: Bandingkan segmen SEC A/B vs SEC C)...",
+        defaultReportPrompt: "Sintesiskan kutipan wawancara kualitatif, hasil simulasi kuantitatif 120 panel, dan data arsip riset Korea 2021-2026 menjadi Laporan Eksekutif yang komprehensif dalam Bahasa Indonesia."
+      }
+    };
+
+    // Global State
+    let allQualPersonas = window.STATIC_QUAL_PERSONAS || [];
+    let interviewMode = "IDI";
+    let selectedPersonaIds = ["F01_choi_yuna"];
+    let savedQualClips = [];
+    let currentQNR = { survey_title: "", questions: [] };
+    let lastQuantResult = null;
+    let currentReportMarkdown = "";
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      await checkHealth();
+      await loadQualPersonas();
+      switchLanguage("ko");
+      await updateQuantPanelPreview();
+    });
+
+    function getSelectedModel() {
+      const sel = document.getElementById("global-model-select");
+      return sel ? sel.value : "qwen2.5:14b";
+    }
+
+    async function checkHealth() {
+      const candidates = [];
+      if (window.location.protocol !== "file:") {
+        candidates.push(window.location.origin);
+      }
+      candidates.push("http://127.0.0.1:8000");
+
+      for (const base of candidates) {
+        try {
+          const ctrl = new AbortController();
+          const tid = setTimeout(() => ctrl.abort(), 1200);
+          const res = await fetch(`${base}/api/health`, { signal: ctrl.signal });
+          clearTimeout(tid);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.status === "online") {
+              API_BASE = base;
+              isBackendOnline = true;
+              if (data.available_models && data.available_models.length > 0) {
+                const sel = document.getElementById("global-model-select");
+                sel.innerHTML = data.available_models.map(m => `<option value="${m}" ${m === data.llm_model ? 'selected' : ''}>🤖 ${m}</option>`).join("");
+              }
+              return;
+            }
+          }
+        } catch (e) {
+          // Proceed to fallback
+        }
+      }
+      isBackendOnline = false;
+    }
+
+    function switchMode(modeNum) {
+      [1, 2, 3].forEach(n => {
+        const view = document.getElementById(`view-mode${n}`);
+        const tab = document.getElementById(`tab-mode${n}`);
+        if (n === modeNum) {
+          view.classList.remove("hidden");
+          tab.className = "mode-tab-active px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5";
+        } else {
+          view.classList.add("hidden");
+          tab.className = "text-slate-300 hover:text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5";
+        }
+      });
+      if (modeNum === 3) {
+        renderReportAssetsTray();
+      }
+    }
+
+    function switchLanguage(lang) {
+      currentLang = lang;
+      const t = I18N[lang] || I18N.ko;
+
+      document.getElementById("ui-tab1").textContent = t.tab1;
+      document.getElementById("ui-tab2").textContent = t.tab2;
+      document.getElementById("ui-tab3").textContent = t.tab3;
+      document.getElementById("ui-m1-filter-title").textContent = t.m1FilterTitle;
+      document.getElementById("active-lang-pill").textContent = t.langLabel;
+      document.getElementById("report-lang-badge").textContent = t.langLabel;
+      document.getElementById("ui-btn-reset").textContent = t.btnReset;
+      document.getElementById("ui-btn-send-qual").textContent = t.btnSendQual;
+      document.getElementById("qual-chat-input").placeholder = t.qualPlaceholder;
+
+      document.getElementById("ui-m2-title").textContent = t.m2Title;
+      document.getElementById("ui-m2-sub").textContent = t.m2Sub;
+      document.getElementById("ui-btn-build-qnr").textContent = t.btnBuildQnr;
+      document.getElementById("quant-chat-input").placeholder = t.quantPlaceholder;
+      document.getElementById("ui-btn-run-sim").textContent = t.btnRunSim;
+      document.getElementById("ui-btn-to-report").textContent = t.btnToReport;
+
+      document.getElementById("ui-m3-title").textContent = t.m3Title;
+      document.getElementById("ui-m3-sub").textContent = t.m3Sub;
+      document.getElementById("ui-btn-gen-full").textContent = t.btnGenFull;
+      document.getElementById("ui-btn-apply-report").textContent = t.btnApplyReport;
+      document.getElementById("report-chat-input").placeholder = t.reportPlaceholder;
+
+      const chipsContainer = document.getElementById("qual-quick-chips");
+      chipsContainer.innerHTML = t.quickChips.map(c => `
+        <button onclick="sendQuickPersonaQuestion('${escapeHtml(c.q)}')" class="px-2.5 py-1 bg-white hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 border border-slate-200 rounded-full text-[11px] font-medium shrink-0 transition-colors">
+          ${escapeHtml(c.label)}
+        </button>
+      `).join("");
+
+      const presetBox = document.getElementById("quant-preset-box");
+      presetBox.innerHTML = `
+        <div class="text-[11px] font-bold text-slate-500 px-1">${escapeHtml(t.presetsTitle)}</div>
+        <div class="grid grid-cols-1 gap-1">
+          ${t.presets.map(pr => `
+            <button onclick="requestSurveyBuild('${escapeHtml(pr.p)}')" class="text-left px-2.5 py-1.5 rounded-lg bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-[11px] font-medium text-slate-700 transition-colors truncate">
+              ${escapeHtml(pr.label)}
+            </button>
+          `).join("")}
+        </div>
+      `;
+
+      setDefaultQNRForLanguage(lang);
+      renderQuantCanvas();
+      renderReportAssetsTray();
+      if (!currentReportMarkdown) {
+        renderInitialReportCanvas();
+      }
+    }
+
+    function setDefaultQNRForLanguage(lang) {
+      const defaults = {
+        ko: {
+          survey_title: "[2021~2026 표준] 프리미엄 리빙·가전 및 라이프스타일 소비자 태도 조사",
+          questions: [
+            { q_id: "Q1", q_type: "likert_5", question_text: "일상 속 가사 노동(세탁·청소·육아·펫케어 등) 시간을 줄여주는 고기능성 프리미엄 제품에 얼마나 관심이 있으십니까?", options: ["1점 (전혀 없다)", "2점 (별로 없다)", "3점 (보통이다)", "4점 (관심 있다)", "5점 (매우 관심 많다)"] },
+            { q_id: "Q2", q_type: "single_choice", question_text: "새로운 브랜드나 서비스 선택 시 가장 최우선으로 고려하는 기준은 무엇입니까?", options: ["검증된 성능·살균력 및 품질 안전성", "합리적인 가격 및 할인 프로모션 가성비", "시간 절약 및 원클릭 간편 사용성", "브랜드 인지도 및 실사용자 후기"] },
+            { q_id: "Q3", q_type: "single_choice", question_text: "본인의 가구 소득(SEC) 및 가처분 여유도(D5)를 감안할 때, 기존 대비 20~30% 비싼 프리미엄 제품 지불 의향은 어떻습니까?", options: ["기존 가격과 동일해야 구매함", "10% 이내 인상 시 구매 고려", "성능이 확실하다면 20~30% 추가 지불 가능", "가격에 구애받지 않고 최상위 라인업 선호"] },
+            { q_id: "Q4", q_type: "likert_5", question_text: "향후 3개월 내 미충족 니즈(Pain Point)를 해결한 신제품 출시 시 구매할 의향이 있으십니까?", options: ["1점 (전혀 없다)", "2점 (별로 없다)", "3점 (반반이다)", "4점 (구매 의향 있음)", "5점 (출시 즉시 구매)"] }
+          ]
+        },
+        en: {
+          survey_title: "[2021-2026 Standard] Korean Consumer Lifestyle & Premium Appliance Survey",
+          questions: [
+            { q_id: "Q1", q_type: "likert_5", question_text: "How interested are you in high-performance premium products that reduce daily household/lifestyle chores?", options: ["1 (Not at all)", "2 (Slightly)", "3 (Neutral)", "4 (Interested)", "5 (Very Interested)"] },
+            { q_id: "Q2", q_type: "single_choice", question_text: "What is your top priority when selecting a new brand or service in South Korea?", options: ["Proven performance & safety quality", "Reasonable price & promotional value", "Time-saving & one-click convenience", "Brand reputation & verified user reviews"] },
+            { q_id: "Q3", q_type: "single_choice", question_text: "Given your household income (SEC tier) and disposable comfort (D5), what is your willingness to pay a 20-30% premium?", options: ["Must be same price as current options", "Willing to pay up to 10% extra", "Willing to pay 20-30% premium for proven quality", "Price is not a barrier for top-tier products"] },
+            { q_id: "Q4", q_type: "likert_5", question_text: "How likely are you to purchase a new product addressing your pain points within the next 3 months?", options: ["1 (Definitely not)", "2 (Unlikely)", "3 (Neutral)", "4 (Likely)", "5 (Definitely will buy)"] }
+          ]
+        },
+        ja: {
+          survey_title: "[2021〜2026標準] 韓国消費者ライフスタイル＆プレミアム製品態度調査",
+          questions: [
+            { q_id: "Q1", q_type: "likert_5", question_text: "日常の家事やライフスタイルの手間を減らす高機能プレミアム製品にどの程度関心がありますか？", options: ["1点 (全くない)", "2点 (あまりない)", "3点 (普通)", "4点 (関心がある)", "5点 (非常に関心がある)"] },
+            { q_id: "Q2", q_type: "single_choice", question_text: "新しいブランドやサービスを選ぶ際、最も重視する基準は何ですか？", options: ["実証された性能・品質の安全性", "合理的な価格およびコスパ・割引特典", "時間短縮および使いやすさ・利便性", "ブランド知名度および実際のユーザー口コミ"] },
+            { q_id: "Q3", q_type: "single_choice", question_text: "現在の世帯所得(SEC)および可処分所得の余裕度(D5)を踏まえ、20〜30%高いプレミアム製品への支払意向はいかがですか？", options: ["既存価格と同じでなければ購入しない", "10%以内の価格差なら検討する", "性能が確実なら20〜30%の追加支払いが可能", "価格を問わず最上位ラインナップを好む"] },
+            { q_id: "Q4", q_type: "likert_5", question_text: "今後3ヶ月以内に現在の不満(Pain Point)を解消した新製品が発売された場合、購入する意向はありますか？", options: ["1点 (全くない)", "2点 (あまりない)", "3点 (どちらとも言えない)", "4点 (購入意向あり)", "5点 (発売後すぐに購入する)"] }
+          ]
+        },
+        zh: {
+          survey_title: "[2021~2026标准] 韩国消费者生活方式与高端产品态度定量调查",
+          questions: [
+            { q_id: "Q1", q_type: "likert_5", question_text: "您对能够减少日常家务与生活负担的高性能高端产品有多大兴趣？", options: ["1分 (完全没兴趣)", "2分 (不太感兴趣)", "3分 (一般)", "4分 (比较感兴趣)", "5分 (非常感兴趣)"] },
+            { q_id: "Q2", q_type: "single_choice", question_text: "在选择新品牌或新服务时，您最优先考虑的核心标准是什么？", options: ["经过验证的性能与品质安全性", "合理的价格与促销性价比", "节省时间与一键式便捷操作", "品牌知名度与真实用户口碑"] },
+            { q_id: "Q3", q_type: "single_choice", question_text: "结合您目前的家庭收入(SEC)与可支配预算(D5)，您对溢价20~30%的高端产品支付意愿如何？", options: ["必须与现有价格一致才购买", "溢价在10%以内可考虑购买", "若性能确实出色，愿意支付20~30%溢价", "不计较价格，偏好顶级旗舰产品"] },
+            { q_id: "Q4", q_type: "likert_5", question_text: "如果未来3个月内推出解决您痛点的新产品，您的购买转化意向如何？", options: ["1分 (绝对不买)", "2分 (意向较低)", "3分 (观望中立)", "4分 (愿意购买)", "5分 (上市立即购买)"] }
+          ]
+        },
+        id: {
+          survey_title: "[Standar 2021-2026] Survei Sikap Konsumen Korea terhadap Produk Premium & Gaya Hidup",
+          questions: [
+            { q_id: "Q1", q_type: "likert_5", question_text: "Seberapa tertarik Anda pada produk premium berkinerja tinggi yang menghemat waktu aktivitas harian?", options: ["1 (Sangat Tidak Tertarik)", "2 (Kurang Tertarik)", "3 (Netral)", "4 (Tertarik)", "5 (Sangat Tertarik)"] },
+            { q_id: "Q2", q_type: "single_choice", question_text: "Apa kriteria utama yang paling Anda prioritaskan saat memilih merek atau layanan baru?", options: ["Kinerja terbukti & keamanan kualitas", "Harga terjangkau & promo nilai terbaik", "Hemat waktu & kemudahan penggunaan", "Reputasi merek & ulasan pengguna asli"] },
+            { q_id: "Q3", q_type: "single_choice", question_text: "Mengingat pendapatan rumah tangga (SEC) dan kenyamanan finansial (D5) Anda, bagaimana kesediaan Anda membayar harga premium 20-30%?", options: ["Harus sama dengan harga saat ini", "Bersedia membayar tambahan hingga 10%", "Bersedia membayar premium 20-30% jika kualitas terbukti", "Harga bukan masalah untuk lini produk terbaik"] },
+            { q_id: "Q4", q_type: "likert_5", question_text: "Dalam 3 bulan ke depan, seberapa besar minat Anda membeli produk baru yang mengatasi keluhan (Pain Point) Anda?", options: ["1 (Tidak Akan Beli)", "2 (Kurang Berminat)", "3 (Netral / Ragu)", "4 (Berminat Membeli)", "5 (Pasti Segera Membeli)"] }
+          ]
+        }
+      };
+      currentQNR = defaults[lang] || defaults.ko;
+    }
+
+    // =========================================================================
+    // MODE 1: 30 QUALITATIVE PERSONAS
+    // =========================================================================
+    async function loadQualPersonas() {
+      if (isBackendOnline) {
+        try {
+          const res = await fetch(`${API_BASE}/api/personas`);
+          const data = await res.json();
+          if (data.personas && data.personas.length > 0) {
+            allQualPersonas = data.personas;
+          }
+        } catch (e) {
+          console.warn("Using embedded static personas:", e);
+        }
+      }
+      if (!allQualPersonas || allQualPersonas.length === 0) {
+        allQualPersonas = window.STATIC_QUAL_PERSONAS || [];
+      }
+      if (allQualPersonas.length > 0) {
+        selectedPersonaIds = [allQualPersonas[0].id];
+      }
+      renderQualPersonaList();
+      renderActivePersonaProfile();
+      clearQualChat();
+    }
+
+    function setInterviewType(type) {
+      interviewMode = type;
+      const btnIdi = document.getElementById("btn-idi-mode");
+      const btnFgd = document.getElementById("btn-fgd-mode");
+      if (type === "IDI") {
+        btnIdi.className = "px-2 py-0.5 rounded-md bg-indigo-600 text-white font-bold";
+        btnFgd.className = "px-2 py-0.5 rounded-md text-slate-600 hover:bg-slate-100 font-semibold";
+        if (selectedPersonaIds.length > 1) selectedPersonaIds = [selectedPersonaIds[0]];
+      } else {
+        btnFgd.className = "px-2 py-0.5 rounded-md bg-indigo-600 text-white font-bold";
+        btnIdi.className = "px-2 py-0.5 rounded-md text-slate-600 hover:bg-slate-100 font-semibold";
+      }
+      renderQualPersonaList();
+      renderActivePersonaProfile();
+    }
+
+    function renderQualPersonaList() {
+      const gFilter = document.getElementById("qual-filter-gender").value;
+      const aFilter = document.getElementById("qual-filter-age").value;
+      const sFilter = document.getElementById("qual-filter-sec").value;
+      const dFilter = document.getElementById("qual-filter-domain").value;
+
+      const filtered = allQualPersonas.filter(p => {
+        if (gFilter !== "전체" && p.gender !== gFilter) return false;
+        if (aFilter !== "전체" && p.age_band !== aFilter) return false;
+        if (sFilter !== "전체") {
+          const secStr = (p.income_profile?.sec_tier || p.income_band || "");
+          if (!secStr.includes(sFilter)) return false;
+        }
+        if (dFilter !== "전체") {
+          const blob = `${p.target_category} ${p.current_brand} ${p.source_project}`;
+          if (!blob.includes(dFilter)) return false;
+        }
+        return true;
+      });
+
+      const container = document.getElementById("qual-persona-list");
+      container.innerHTML = filtered.map(p => {
+        const isSelected = selectedPersonaIds.includes(p.id);
+        const secBadge = (p.income_profile?.sec_tier || "SEC B").split(" ")[0] + " " + ((p.income_profile?.sec_tier || "SEC B").split(" ")[1] || "");
+        const genderColor = p.gender === "남성" ? "bg-blue-100 text-blue-700" : "bg-rose-100 text-rose-700";
+        return `
+          <div onclick="togglePersonaSelection('${p.id}')" 
+               class="cursor-pointer p-2.5 rounded-xl border border-slate-200 hover:border-indigo-400 bg-white transition-all flex flex-col justify-between ${isSelected ? 'persona-card-selected ring-2 ring-indigo-500/20' : ''}">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center gap-1.5">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${genderColor}">${p.id.split('_')[0]}</span>
+                  <span class="font-bold text-xs text-slate-900">${p.name}</span>
+                  <span class="text-[11px] text-slate-500">${p.age}</span>
+                </div>
+                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-bold text-[10px]">${secBadge}</span>
+              </div>
+              <div class="text-[11px] text-slate-600 font-medium truncate">${p.occupation}</div>
+              <div class="text-[10px] text-slate-400 truncate mt-0.5">${p.life_phase} · ${p.religion}</div>
+            </div>
+            <div class="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[10px] font-semibold text-indigo-600 truncate">${p.target_category}</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function togglePersonaSelection(pid) {
+      if (interviewMode === "IDI") {
+        selectedPersonaIds = [pid];
+      } else {
+        if (selectedPersonaIds.includes(pid)) {
+          if (selectedPersonaIds.length > 1) selectedPersonaIds = selectedPersonaIds.filter(id => id !== pid);
+        } else {
+          if (selectedPersonaIds.length >= 4) {
+            alert("Max 4 personas for Mini-FGD.");
+            return;
+          }
+          selectedPersonaIds.push(pid);
+        }
+      }
+      renderQualPersonaList();
+      renderActivePersonaProfile();
+    }
+
+    function renderActivePersonaProfile() {
+      const activeList = allQualPersonas.filter(p => selectedPersonaIds.includes(p.id));
+      if (activeList.length === 0) return;
+
+      const p = activeList[0];
+      const inc = p.income_profile || {};
+      const badgeEl = document.getElementById("chat-room-badge");
+      const titleEl = document.getElementById("chat-room-title");
+
+      if (interviewMode === "IDI") {
+        badgeEl.textContent = "1:1 IDI";
+        badgeEl.className = "px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-bold text-xs border border-indigo-200";
+        titleEl.textContent = `${p.name} (${p.gender}/${p.age} · ${p.occupation} · ${p.income_band})`;
+      } else {
+        badgeEl.textContent = `Mini-FGD (${activeList.length})`;
+        badgeEl.className = "px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 font-bold text-xs border border-purple-200";
+        titleEl.textContent = activeList.map(x => `${x.name}(${x.age})`).join(", ");
+      }
+
+      document.getElementById("qual-active-profile").innerHTML = `
+        <div class="flex items-center justify-between mb-1.5">
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-sm text-white">${p.name} (${p.gender}, ${p.age})</span>
+            <span class="px-2 py-0.5 rounded bg-indigo-500/30 text-indigo-200 text-[10px] font-bold">${p.life_phase} · ${p.religion}</span>
+          </div>
+          <span class="text-[10px] text-emerald-300 font-semibold">${inc.sec_tier || p.income_band}</span>
+        </div>
+        <div class="grid grid-cols-2 gap-1.5 text-[11px] bg-slate-800/90 p-2 rounded-lg border border-slate-700 mb-2">
+          <div><span class="text-slate-400">Income:</span> <span class="text-slate-100 font-medium">${inc.monthly_household_income || p.income_band} (${inc.annual_household_income || ''})</span></div>
+          <div><span class="text-slate-400">D5 Comfort:</span> <span class="text-amber-300 font-medium">${inc.disposable_comfort || 'Level 3'}</span></div>
+          <div class="col-span-2 truncate"><span class="text-slate-400">Source Screener:</span> <span class="text-indigo-300 font-semibold">${p.source_project}</span></div>
+        </div>
+        <div class="text-[11px] text-slate-300 space-y-1">
+          <div class="truncate"><strong class="text-rose-300">Pain Points:</strong> ${(p.pain_points || []).join(" / ")}</div>
+        </div>
+      `;
+    }
+
+    function clearQualChat() {
+      const activeList = allQualPersonas.filter(p => selectedPersonaIds.includes(p.id));
+      const names = activeList.map(x => `${x.name}(${x.age}, ${x.occupation})`).join(", ");
+      const stream = document.getElementById("qual-chat-stream");
+      stream.innerHTML = `
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm text-xs text-slate-600 leading-relaxed">
+          <div class="font-bold text-slate-800 mb-1"><i class="fa-solid fa-language text-indigo-600 mr-1.5"></i>Multi-Language Simultaneous Persona Interview (KO · EN · JA · ZH · ID)</div>
+          Active Persona: <strong>${names || 'Persona'}</strong>.<br/>
+          Select your preferred language in the top-right bar (<strong>🇰🇷 KO / 🇺🇸 EN / 🇯🇵 JA / 🇨🇳 ZH / 🇮🇩 ID</strong>) — the Korean persona will respond directly in your chosen language while preserving their authentic Korean lifestyle and SEC income context.
+        </div>
+      `;
+    }
+
+    function sendQuickPersonaQuestion(qText) {
+      document.getElementById("qual-chat-input").value = qText;
+      sendPersonaMessage();
+    }
+
+    function generateStandalonePersonaReply(p, question, lang) {
+      const inc = p.income_profile || {};
+      const sec = inc.sec_tier || p.income_band || "SEC B";
+      const d5 = inc.disposable_comfort || "Level 3";
+      const pains = (p.pain_points || []).join("; ");
+      const motivs = (p.key_motivations || []).join("; ");
+      const ideal = p.ideal_product_needs || "";
+      const j = p.journey_narrative || {};
+
+      if (lang === "en") {
+        return `As a ${p.age}-year-old working as "${p.occupation}" in ${p.residence} (${p.life_phase}, household income ${inc.monthly_household_income || p.income_band} / ${sec}), I currently use ${p.current_brand} (satisfaction ${p.brand_satisfaction_score}/10).\n\nMy biggest frustrations in this category are: ${pains}. On the other hand, my key purchasing drivers are: ${motivs}.\n\nConsidering my current financial comfort (${d5}), what I really want in Korea is: "${ideal}". Usually, my buying journey starts when "${j.trigger || 'I need a reliable solution'}", and I verify specs/reviews via "${j.search || 'Korean online communities'}" before purchasing.`;
+      } else if (lang === "ja") {
+        return `私は${p.residence}在住、${p.age}歳の「${p.occupation}」（${p.life_phase}・世帯所得 ${inc.monthly_household_income || p.income_band} / ${sec}）です。現在「${p.target_category}」カテゴリーでは主に「${p.current_brand}」（満足度${p.brand_satisfaction_score}/10）を利用しています。\n\n普段最も不満に感じている点（ペインポイント）は、「${pains}」です。一方で重視している動機は「${motivs}」です。\n\n現在の家計余裕度（${d5}）を踏まえると、私が本当に求めている理想の製品・サービスは「${ideal}」です。`;
+      } else if (lang === "zh") {
+        return `我今年${p.age}岁，居住在${p.residence}，职业是“${p.occupation}”（${p.life_phase}，家庭收入 ${inc.monthly_household_income || p.income_band} / ${sec}）。在“${p.target_category}”品类中，我目前主要使用“${p.current_brand}”（满意度 ${p.brand_satisfaction_score}/10）。\n\n我平时最大的痛点是：${pains}。而我最看重的核心动机是：${motivs}。\n\n结合我目前的可支配收入状态（${d5}），我最期待的理想产品是：“${ideal}”。`;
+      } else if (lang === "id") {
+        return `Sebagai konsumen Korea berusia ${p.age} tahun yang bekerja sebagai "${p.occupation}" di ${p.residence} (${p.life_phase}, pendapatan ${inc.monthly_household_income || p.income_band} / ${sec}), saat ini saya menggunakan ${p.current_brand} (kepuasan ${p.brand_satisfaction_score}/10).\n\nKeluhan utama (pain points) saya adalah: ${pains}. Motivasi utama saya: ${motivs}.\n\nDengan tingkat kenyamanan finansial (${d5}), produk/layanan ideal yang saya harapkan adalah: "${ideal}".`;
+      }
+      return `안녕하세요, 저는 ${p.residence}에 거주하는 ${p.age}세 ${p.occupation} ${p.name}입니다 (${p.life_phase}, 가구 소득 ${inc.monthly_household_income || p.income_band} / ${sec}). 현재 '${p.target_category}' 분야에서는 주로 '${p.current_brand}'(만족도 ${p.brand_satisfaction_score}/10점)를 이용하고 있어요.\n\n평소 제가 가장 크게 느끼는 불편함(Pain Point)은 "${pains}"입니다. 반면 제가 중요하게 생각하는 기준은 "${motivs}"이고요.\n\n제 현재 가처분 소득 여유도(${d5})를 고려할 때, 앞으로 "${ideal}" 같은 제품이나 서비스가 나온다면 적극적으로 구매하거나 갈아탈 의향이 있습니다. (평소 구매 패턴: ${j.trigger || ''} → ${j.search || ''} → ${j.purchase || ''})`;
+    }
+
+    async function sendPersonaMessage() {
+      const inputEl = document.getElementById("qual-chat-input");
+      const msg = inputEl.value.trim();
+      if (!msg) return;
+      inputEl.value = "";
+
+      const t = I18N[currentLang] || I18N.ko;
+      const stream = document.getElementById("qual-chat-stream");
+      stream.insertAdjacentHTML("beforeend", `
+        <div class="flex justify-end">
+          <div class="max-w-[75%] bg-indigo-600 text-white rounded-2xl rounded-tr-sm px-4 py-2.5 text-xs font-medium shadow-sm">
+            ${escapeHtml(msg)}
+          </div>
+        </div>
+      `);
+
+      const loadingId = "loading-" + Date.now();
+      stream.insertAdjacentHTML("beforeend", `
+        <div id="${loadingId}" class="flex items-center gap-2 text-xs text-slate-500 bg-white px-4 py-3 rounded-2xl border border-slate-200 w-fit">
+          <i class="fa-solid fa-circle-notch fa-spin text-indigo-600"></i>
+          <span>Generating response (${currentLang.toUpperCase()} · ${getSelectedModel()})...</span>
+        </div>
+      `);
+      stream.scrollTop = stream.scrollHeight;
+
+      let responses = [];
+      let cites = "2021–2026 Korean Screener & Persona Matrix";
+
+      if (isBackendOnline) {
+        try {
+          const res = await fetch(`${API_BASE}/api/chat/persona`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              persona_ids: selectedPersonaIds,
+              message: msg,
+              lang: currentLang,
+              model: getSelectedModel()
+            })
+          });
+          const data = await res.json();
+          responses = data.responses || [{
+            persona_id: data.persona_id,
+            name: data.name,
+            reply: data.reply
+          }];
+          cites = (data.retrieved_context || []).map(c => `${c.source} (${c.timestamp})`).join(" · ") || cites;
+        } catch (e) {
+          console.warn("Falling back to standalone persona engine:", e);
+        }
+      }
+
+      if (responses.length === 0) {
+        await new Promise(r => setTimeout(r, 380));
+        const activePersonas = allQualPersonas.filter(p => selectedPersonaIds.includes(p.id));
+        responses = activePersonas.map(p => ({
+          persona_id: p.id,
+          name: p.name,
+          age: p.age,
+          gender: p.gender,
+          occupation: p.occupation,
+          sec_tier: p.income_profile?.sec_tier || p.income_band,
+          source_project: p.source_project,
+          reply: generateStandalonePersonaReply(p, msg, currentLang)
+        }));
+      }
+
+      document.getElementById(loadingId)?.remove();
+
+      responses.forEach(r => {
+        const clipData = encodeURIComponent(JSON.stringify({
+          persona_id: r.persona_id,
+          name: r.name,
+          age: r.age || "",
+          gender: r.gender || "",
+          occupation: r.occupation || "",
+          sec_tier: r.sec_tier || "",
+          question: msg,
+          reply: r.reply
+        }));
+
+        stream.insertAdjacentHTML("beforeend", `
+          <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-2.5 max-w-[88%]">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center">${(r.name || 'P')[0]}</span>
+                <span class="font-bold text-xs text-slate-900">${r.name}</span>
+                <span class="text-[11px] text-slate-500">${r.age ? r.age + ' · ' : ''}${r.occupation || ''}</span>
+                <span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded text-[10px] font-bold border border-emerald-200">${r.sec_tier || ''}</span>
+              </div>
+              <span class="text-[10px] text-slate-400 truncate max-w-[220px]">📁 ${r.source_project || ''}</span>
+            </div>
+            <p class="text-xs text-slate-800 leading-relaxed whitespace-pre-line">${escapeHtml(r.reply)}</p>
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+              <span class="text-[10px] text-slate-400 truncate"><i class="fa-solid fa-database text-indigo-400 mr-1"></i>RAG: ${cites}</span>
+              <div class="flex items-center gap-1.5">
+                <button onclick="saveQualClip('${clipData}', this)" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-[11px] font-bold transition-colors flex items-center gap-1">
+                  <i class="fa-solid fa-thumbtack"></i><span>${escapeHtml(t.clipSaveBtn)}</span>
+                </button>
+                <button onclick="bridgeQualToQuant('${escapeHtml(msg)}')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] font-bold transition-colors flex items-center gap-1">
+                  <i class="fa-solid fa-list-check"></i><span>${escapeHtml(t.bridgeQuantBtn)}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `);
+      });
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    function saveQualClip(encodedJson, btnEl) {
+      try {
+        const obj = JSON.parse(decodeURIComponent(encodedJson));
+        savedQualClips.push(obj);
+        document.getElementById("badge-qual-count").textContent = `${savedQualClips.length}`;
+        btnEl.innerHTML = `<i class="fa-solid fa-check"></i><span>Saved (${savedQualClips.length})</span>`;
+        btnEl.className = "px-2.5 py-1 rounded-lg bg-slate-800 text-white text-[11px] font-bold flex items-center gap-1";
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function bridgeQualToQuant(topicQuestion) {
+      switchMode(2);
+      document.getElementById("quant-chat-input").value = topicQuestion;
+      sendQuantArchitectMessage();
+    }
+
+    // =========================================================================
+    // MODE 2: QUANT SURVEY BUILDER & 120-PANEL SIMULATOR (STANDALONE + SERVER)
+    // =========================================================================
+    function getQuantFiltersFromUI() {
+      return {
+        gender: document.getElementById("q-filter-gender").value,
+        age_band: document.getElementById("q-filter-age").value,
+        sec_tier: document.getElementById("q-filter-sec").value,
+        life_phase: document.getElementById("q-filter-life").value,
+        religion: document.getElementById("q-filter-religion").value
+      };
+    }
+
+    function filterQuantPanelLocally(panel, filters) {
+      if (!filters) return panel;
+      return panel.filter(p => {
+        const d = p.demographics || {};
+        if (filters.gender && filters.gender !== "전체" && d.gender !== filters.gender) return false;
+        if (filters.age_band && filters.age_band !== "전체") {
+          if (filters.age_band === "2030" && !["20대", "30대"].includes(d.age_band)) return false;
+          else if (filters.age_band === "3040" && !["30대", "40대"].includes(d.age_band)) return false;
+          else if (!["2030", "3040"].includes(filters.age_band) && d.age_band !== filters.age_band) return false;
+        }
+        if (filters.sec_tier && filters.sec_tier !== "전체") {
+          const secVal = d.sec_socio_economic_tier || "";
+          if (filters.sec_tier === "SEC B 이상 (고소득)" && !secVal.includes("SEC B") && !secVal.includes("SEC A")) return false;
+          else if (filters.sec_tier === "SEC C1 이상 (중위+)" && secVal.includes("SEC D")) return false;
+          else if (!["SEC B 이상 (고소득)", "SEC C1 이상 (중위+)"].includes(filters.sec_tier) && !secVal.includes(filters.sec_tier)) return false;
+        }
+        if (filters.life_phase && filters.life_phase !== "전체") {
+          if (filters.life_phase === "유자녀 전체" && !(d.life_phase || "").includes("유자녀")) return false;
+          else if (filters.life_phase !== "유자녀 전체" && !(d.life_phase || "").includes(filters.life_phase)) return false;
+        }
+        if (filters.religion && filters.religion !== "전체" && d.religion !== filters.religion) return false;
+        return true;
+      });
+    }
+
+    async function updateQuantPanelPreview() {
+      const filters = getQuantFiltersFromUI();
+      if (isBackendOnline) {
+        try {
+          const res = await fetch(`${API_BASE}/api/quant/panel`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filters })
+          });
+          const data = await res.json();
+          document.getElementById("quant-matched-count").textContent = data.matched_count;
+          return;
+        } catch (e) {}
+      }
+      const matched = filterQuantPanelLocally(allQuantPanel, filters);
+      document.getElementById("quant-matched-count").textContent = matched.length;
+    }
+
+    function requestSurveyBuild(promptText) {
+      document.getElementById("quant-chat-input").value = promptText;
+      sendQuantArchitectMessage();
+    }
+
+    function buildQnrLocally(prompt, lang) {
+      const fbByLang = {
+        ko: {
+          comment: "요청하신 주제를 검증하기 위해 2021~2026 스크리너 표준에 맞춘 4개 핵심 문항(매력도, 최우선 고려 요인, 가격 수용성, 구매 전환 의향)을 구성했습니다.",
+          title_prefix: "소비자 태도 및 구매 의향 정량 조사",
+          likert: ["1점 (전혀 그렇지 않다)", "2점 (그렇지 않다)", "3점 (보통이다)", "4점 (그렇다)", "5점 (매우 그렇다)"],
+          q1: "제안된 제품/서비스 콘셉트의 전반적인 매력도와 필요성에 대해 어떻게 평가하십니까?",
+          q2: "해당 카테고리 선택 시 가장 최우선으로 고려하시는 핵심 기준은 무엇입니까?",
+          q2_opts: ["검증된 성능·품질 신뢰도", "합리적인 가격 및 프로모션 가성비", "시간 절약 및 사용 편의성", "브랜드 인지도 및 실사용자 리뷰"],
+          q3: "기존 대비 프리미엄 가치가 제공될 때 지불 가능한 추가 비용 수준은 어떻습니까?",
+          q3_opts: ["기존 가격과 동일해야 구매함", "10% 내외 추가 지불 가능", "20~30% 프리미엄 가격 지불 가능", "품질이 확실하다면 가격 불문"],
+          q4: "향후 3개월 이내 정식 출시된다면 실제 구매(또는 구독)할 의향이 있으십니까?"
+        },
+        en: {
+          comment: "Designed 4 core quantitative questions (Overall Appeal, Key Decision Driver, Price Sensitivity, Purchase Intent) grounded in 2021-2026 Korean screener standards.",
+          title_prefix: "Korean Consumer Attitude & Purchase Intent Survey",
+          likert: ["1 (Strongly Disagree)", "2 (Disagree)", "3 (Neutral)", "4 (Agree)", "5 (Strongly Agree)"],
+          q1: "How would you rate the overall appeal and necessity of the proposed product/service concept?",
+          q2: "What is your top priority when choosing a product or service in this category?",
+          q2_opts: ["Proven performance & quality reliability", "Reasonable price & promotional value", "Time-saving & convenience of use", "Brand reputation & verified user reviews"],
+          q3: "Considering your household income (SEC) and disposable comfort, how much premium are you willing to pay?",
+          q3_opts: ["Must be same price as current options", "Willing to pay ~10% premium", "Willing to pay 20-30% premium for quality", "Price is not a barrier if top quality is guaranteed"],
+          q4: "If officially launched within the next 3 months, how likely are you to purchase or subscribe?"
+        },
+        ja: {
+          comment: "2021〜2026年の韓国スクリーナー基準に基づき、4つの主要設問（全体的な魅力度、最優先の選択基準、価格受容性、購入意向）を設計しました。",
+          title_prefix: "韓国消費者態度および購入意向に関する定量調査",
+          likert: ["1点 (全くそう思わない)", "2点 (あまりそう思わない)", "3点 (どちらとも言えない)", "4点 (そう思う)", "5点 (非常にそう思う)"],
+          q1: "提案された製品・サービスコンセプトの全体的な魅力度と必要性についてどう評価しますか？",
+          q2: "当カテゴリーの製品・サービスを選ぶ際、最も重視する基準は何ですか？",
+          q2_opts: ["実証された性能・品質の信頼性", "合理的な価格およびコスパ・割引特典", "時間短縮および使いやすさ・利便性", "ブランド知名度および実際のユーザー口コミ"],
+          q3: "現在の世帯所得(SEC)を考慮した際、プレミアム価値に対してどの程度の追加支払いが可能ですか？",
+          q3_opts: ["既存価格と同じでなければ購入しない", "10%前後の追加支払いなら可能", "20〜30%のプレミアム価格まで支払い可能", "品質が確実であれば価格は問わない"],
+          q4: "今後3ヶ月以内に正式発売された場合、実際に購入（または利用）する意向はありますか？"
+        },
+        zh: {
+          comment: "基于2021-2026年韩国甄别问卷(Screener)标准，为您设计了4道核心定量问题（整体吸引力、首要购买驱动因素、价格接受度、购买转化意向）。",
+          title_prefix: "韩国消费者态度与购买意向定量调查",
+          likert: ["1分 (完全不同意)", "2分 (不太同意)", "3分 (一般/中立)", "4分 (比较同意)", "5分 (非常同意)"],
+          q1: "您如何评价该产品/服务概念的整体吸引力与必要性？",
+          q2: "在选择该品类产品或服务时，您最优先考虑的核心标准是什么？",
+          q2_opts: ["经过验证的性能与品质可靠性", "合理的价格与促销性价比", "节省时间与使用便捷性", "品牌知名度与真实用户口碑评价"],
+          q3: "结合您目前的家庭收入(SEC)与可支配预算，您愿意为高端品质支付多少溢价？",
+          q3_opts: ["必须与现有产品价格一致才购买", "愿意支付10%左右的溢价", "若品质出色，愿意支付20~30%的溢价", "只要效果顶尖，不计较价格"],
+          q4: "如果该产品/服务在未来3个月内正式上市，您的实际购买（或订阅）意向如何？"
+        },
+        id: {
+          comment: "Merancang 4 pertanyaan kuantitatif utama (Daya Tarik Utama, Faktor Keputusan, Sensitivitas Harga, Minat Beli) berdasarkan standar screener Korea 2021-2026.",
+          title_prefix: "Survei Kuantitatif Sikap & Minat Beli Konsumen Korea",
+          likert: ["1 (Sangat Tidak Setuju)", "2 (Tidak Setuju)", "3 (Netral)", "4 (Setuju)", "5 (Sangat Setuju)"],
+          q1: "Bagaimana penilaian Anda terhadap daya tarik dan kebutuhan keseluruhan dari konsep produk/layanan ini?",
+          q2: "Apa kriteria utama yang paling Anda prioritaskan saat memilih produk/layanan di kategori ini?",
+          q2_opts: ["Kinerja terbukti & keandalan kualitas", "Harga terjangkau & promo nilai terbaik", "Hemat waktu & kemudahan penggunaan", "Reputasi merek & ulasan pengguna asli"],
+          q3: "Mempertimbangkan pendapatan rumah tangga (SEC) Anda, seberapa besar harga premium yang bersedia Anda bayar?",
+          q3_opts: ["Harus sama dengan harga produk saat ini", "Bersedia membayar tambahan sekitar 10%", "Bersedia membayar premium 20-30% untuk kualitas", "Harga bukan masalah jika kualitas terbaik terjamin"],
+          q4: "Jika diluncurkan secara resmi dalam 3 bulan ke depan, seberapa besar kemungkinan Anda untuk membeli/berlangganan?"
+        }
+      };
+      const fb = fbByLang[lang] || fbByLang.ko;
+      const topic = prompt ? prompt.slice(0, 38) : "New Concept";
+      return {
+        architect_comment: fb.comment,
+        survey_title: `[${topic}] ${fb.title_prefix}`,
+        questions: [
+          { q_id: "Q1", q_type: "likert_5", question_text: `[${topic}] ${fb.q1}`, options: fb.likert },
+          { q_id: "Q2", q_type: "single_choice", question_text: fb.q2, options: fb.q2_opts },
+          { q_id: "Q3", q_type: "single_choice", question_text: fb.q3, options: fb.q3_opts },
+          { q_id: "Q4", q_type: "likert_5", question_text: fb.q4, options: fb.likert }
+        ]
+      };
+    }
+
+    async function sendQuantArchitectMessage() {
+      const inputEl = document.getElementById("quant-chat-input");
+      const prompt = inputEl.value.trim();
+      if (!prompt) return;
+      inputEl.value = "";
+
+      const stream = document.getElementById("quant-chat-stream");
+      stream.insertAdjacentHTML("beforeend", `
+        <div class="flex justify-end">
+          <div class="max-w-[82%] bg-emerald-600 text-white rounded-2xl rounded-tr-sm px-3.5 py-2 text-xs font-medium">
+            ${escapeHtml(prompt)}
+          </div>
+        </div>
+      `);
+
+      const loadId = "qload-" + Date.now();
+      stream.insertAdjacentHTML("beforeend", `
+        <div id="${loadId}" class="bg-slate-100 rounded-2xl p-3 text-xs text-slate-600 flex items-center gap-2">
+          <i class="fa-solid fa-spinner fa-spin text-emerald-600"></i>
+          <span>Survey Architect AI is designing QNR (${currentLang.toUpperCase()})...</span>
+        </div>
+      `);
+      stream.scrollTop = stream.scrollHeight;
+
+      let data = null;
+      if (isBackendOnline) {
+        try {
+          const res = await fetch(`${API_BASE}/api/quant/build_qnr`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              prompt: prompt,
+              filters: getQuantFiltersFromUI(),
+              lang: currentLang,
+              model: getSelectedModel()
+            })
+          });
+          data = await res.json();
+        } catch (e) {}
+      }
+
+      if (!data || !data.questions) {
+        await new Promise(r => setTimeout(r, 320));
+        data = buildQnrLocally(prompt, currentLang);
+      }
+
+      document.getElementById(loadId)?.remove();
+
+      if (data.questions && data.questions.length > 0) {
+        currentQNR = {
+          survey_title: data.survey_title || "Custom Survey",
+          questions: data.questions
+        };
+      }
+
+      stream.insertAdjacentHTML("beforeend", `
+        <div class="bg-white rounded-2xl p-3.5 text-xs text-slate-700 leading-relaxed border border-emerald-200 shadow-sm space-y-2">
+          <div class="font-bold text-emerald-800"><i class="fa-solid fa-check-circle mr-1"></i>QNR Ready (${currentLang.toUpperCase()})</div>
+          <p>${escapeHtml(data.architect_comment || "")}</p>
+          <button onclick="runQuantSimulation()" class="w-full py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-xs transition-colors">
+            🚀 ${escapeHtml((I18N[currentLang] || I18N.ko).btnRunSim)}
+          </button>
+        </div>
+      `);
+      stream.scrollTop = stream.scrollHeight;
+      renderQuantCanvas();
+    }
+
+    function renderQuantCanvas() {
+      const container = document.getElementById("quant-canvas-body");
+      const qHtml = (currentQNR.questions || []).map((q, idx) => `
+        <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-extrabold text-xs border border-indigo-200">${q.q_id || ('Q' + (idx+1))}</span>
+            <span class="text-[11px] font-semibold text-slate-400">${q.q_type === 'likert_5' ? '5-Point Likert Scale' : 'Single Choice'}</span>
+          </div>
+          <input type="text" value="${escapeHtml(q.question_text)}" 
+                 onchange="currentQNR.questions[${idx}].question_text = this.value"
+                 class="w-full font-bold text-xs text-slate-900 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500" />
+          <div class="grid grid-cols-2 gap-1.5 pt-1">
+            ${(q.options || []).map(opt => `
+              <div class="px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200/80 text-[11px] text-slate-700 truncate">
+                <i class="fa-regular fa-circle-dot text-slate-400 mr-1.5"></i>${escapeHtml(opt)}
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `).join("");
+
+      let simHtml = "";
+      if (lastQuantResult) {
+        const totalN = lastQuantResult.total_respondents || 1;
+        const resultsCards = (lastQuantResult.question_results || []).map(qr => {
+          const bars = Object.entries(qr.counts || {}).map(([opt, cnt]) => {
+            const pct = Math.round((cnt / totalN) * 1000) / 10;
+            return `
+              <div class="space-y-1">
+                <div class="flex justify-between text-xs">
+                  <span class="font-medium text-slate-700">${escapeHtml(opt)}</span>
+                  <span class="font-bold text-indigo-700">${cnt} (${pct}%)</span>
+                </div>
+                <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full bg-indigo-600 rounded-full" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            `;
+          }).join("");
+
+          const secKeys = Object.keys(qr.by_sec_tier || {}).sort();
+          const secRows = secKeys.map(secKey => {
+            const rowObj = qr.by_sec_tier[secKey];
+            const rowSum = Object.values(rowObj).reduce((a, b) => a + b, 0) || 1;
+            const cells = qr.options.map(o => {
+              const c = rowObj[o] || 0;
+              const p = Math.round((c / rowSum) * 100);
+              return `<td class="px-2 py-1 text-center border-b border-slate-100">${c} <span class="text-slate-400">(${p}%)</span></td>`;
+            }).join("");
+            return `<tr><td class="px-2 py-1 font-bold text-slate-800 bg-slate-50 border-b border-slate-100">${secKey} (n=${rowSum})</td>${cells}</tr>`;
+          }).join("");
+
+          return `
+            <div class="bg-white rounded-2xl p-5 border border-emerald-200 shadow-sm space-y-4">
+              <div class="border-b border-slate-100 pb-2.5">
+                <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-xs mr-1.5">${qr.q_id}</span>
+                <span class="font-bold text-sm text-slate-900">${escapeHtml(qr.question_text)}</span>
+              </div>
+              <div class="space-y-2.5">${bars}</div>
+              <details class="pt-2">
+                <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800">
+                  📊 [Crosstab] SEC Socio-Economic Income Tier Breakdown (2021~2026 Screener)
+                </summary>
+                <div class="mt-2 overflow-x-auto">
+                  <table class="w-full text-[11px] text-left border border-slate-200 rounded-lg overflow-hidden">
+                    <thead class="bg-slate-100 text-slate-700 font-bold">
+                      <tr>
+                        <th class="px-2 py-1.5">SEC Tier</th>
+                        ${qr.options.map(o => `<th class="px-2 py-1.5 text-center truncate max-w-[110px]">${escapeHtml(o)}</th>`).join("")}
+                      </tr>
+                    </thead>
+                    <tbody>${secRows}</tbody>
+                  </table>
+                </div>
+              </details>
+            </div>
+          `;
+        }).join("");
+
+        simHtml = `
+          <div class="bg-emerald-900 text-white rounded-2xl p-4 shadow-md flex items-center justify-between">
+            <div>
+              <div class="text-xs font-bold text-emerald-300">✅ 120-Panel Quantitative Simulation Complete</div>
+              <div class="text-sm font-extrabold mt-0.5">${escapeHtml(lastQuantResult.survey_title)} (N = ${totalN})</div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="downloadQuantCSV()" class="px-3 py-1.5 bg-white text-emerald-950 rounded-xl font-bold text-xs hover:bg-emerald-50">
+                <i class="fa-solid fa-file-csv mr-1"></i>Raw CSV
+              </button>
+              <button onclick="switchMode(3); generateFullReport();" class="px-3 py-1.5 bg-amber-400 text-slate-950 rounded-xl font-bold text-xs hover:bg-amber-300">
+                <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Synthesize Report (${currentLang.toUpperCase()})
+              </button>
+            </div>
+          </div>
+          ${resultsCards}
+        `;
+      }
+
+      container.innerHTML = `
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-extrabold text-sm text-slate-800"><i class="fa-solid fa-clipboard-question text-indigo-600 mr-1.5"></i>Questionnaire (QNR) Canvas (${currentLang.toUpperCase()})</h3>
+            <span class="text-xs font-semibold text-slate-500">${escapeHtml(currentQNR.survey_title)}</span>
+          </div>
+          ${qHtml}
+        </div>
+        ${simHtml ? `<div class="pt-4 border-t-2 border-slate-200 space-y-4">${simHtml}</div>` : ''}
+      `;
+    }
+
+    function simulateQuantLocally(surveyTitle, filters, questions) {
+      let targetPanel = filterQuantPanelLocally(allQuantPanel, filters);
+      if (!targetPanel || targetPanel.length === 0) targetPanel = allQuantPanel;
+
+      const qStats = {};
+      questions.forEach(q => {
+        const opts = q.options || ["1", "2", "3", "4", "5"];
+        qStats[q.q_id] = {
+          q_id: q.q_id,
+          question_text: q.question_text,
+          q_type: q.q_type || "single_choice",
+          options: opts,
+          counts: Object.fromEntries(opts.map(o => [o, 0])),
+          by_sec_tier: {},
+          by_age_band: {}
+        };
+      });
+
+      let seed = 0;
+      for (let i = 0; i < surveyTitle.length; i++) seed = ((seed << 5) - seed + surveyTitle.charCodeAt(i)) | 0;
+      function nextRand() {
+        seed = (seed * 1664525 + 1013904223) >>> 0;
+        return seed / 4294967296;
+      }
+      function weightedPick(opts, weights) {
+        const sum = weights.reduce((a, b) => a + b, 0);
+        let r = nextRand() * sum;
+        for (let i = 0; i < opts.length; i++) {
+          r -= weights[i];
+          if (r <= 0) return opts[i];
+        }
+        return opts[opts.length - 1];
+      }
+
+      const rawResponses = [];
+      targetPanel.forEach(member => {
+        const d = member.demographics || {};
+        const cb = member.category_behaviors || {};
+        const psy = member.psychographics || {};
+        const secFull = d.sec_socio_economic_tier || "SEC B";
+        const parts = secFull.split(" ");
+        const secShort = parts.length >= 2 ? `${parts[0]} ${parts[1]}` : secFull;
+        const ageB = d.age_band || "30대";
+        const earlyScore = cb.tech_beauty_home_pet?.early_adopter_score || 3;
+        const priceSens = psy.price_sensitivity || "중";
+
+        const row = {
+          panel_id: member.panel_id,
+          name: member.name,
+          gender: d.gender,
+          age: d.age,
+          age_band: ageB,
+          region: d.region,
+          life_phase: d.life_phase,
+          religion: d.religion,
+          occupation: d.occupation,
+          monthly_income: d.monthly_household_income,
+          annual_income: d.annual_household_income,
+          sec_tier: secShort,
+          disposable_comfort: d.disposable_financial_comfort,
+          answers: {}
+        };
+
+        questions.forEach(q => {
+          const qid = q.q_id;
+          const opts = q.options || ["1", "2", "3", "4", "5"];
+          let weights = [];
+          if (q.q_type === "likert_5" || opts.length === 5) {
+            let bw = [0.06, 0.14, 0.28, 0.34, 0.18];
+            if (secShort.includes("SEC A")) bw = [0.03, 0.08, 0.20, 0.42, 0.27];
+            else if (secShort.includes("SEC B")) bw = [0.04, 0.11, 0.25, 0.38, 0.22];
+            else if (secShort.includes("SEC D")) bw = [0.12, 0.24, 0.34, 0.20, 0.10];
+            if (earlyScore >= 4) { bw[4] += 0.10; bw[3] += 0.05; }
+            weights = bw.slice(0, opts.length);
+          } else {
+            weights = opts.map(optText => {
+              let w = 1.0;
+              const low = optText.toLowerCase();
+              if (["가격", "가성비", "동일", "price", "same", "コスパ", "価格", "价格", "性价比", "harga"].some(k => low.includes(k))) {
+                if (priceSens.includes("상") || secShort.includes("SEC D") || secShort.includes("SEC C2")) w += 1.8;
+              } else if (["프리미엄", "구애받지", "20", "30%", "품질", "성능", "premium", "quality", "performance", "品質", "プレミアム", "品质", "高端", "kualitas"].some(k => low.includes(k))) {
+                if (priceSens.includes("하") || secShort.includes("SEC A") || secShort.includes("SEC B")) w += 1.9;
+              } else if (["편의", "시간", "간편", "time", "convenience", "時間", "利便", "时间", "便捷", "waktu", "mudah"].some(k => low.includes(k))) {
+                if ((d.life_phase || "").includes("유자녀") || ["30대", "40대"].includes(ageB)) w += 1.5;
+              }
+              return w;
+            });
+          }
+
+          const chosen = weightedPick(opts, weights);
+          row.answers[qid] = chosen;
+
+          const st = qStats[qid];
+          st.counts[chosen] = (st.counts[chosen] || 0) + 1;
+          if (!st.by_sec_tier[secShort]) st.by_sec_tier[secShort] = Object.fromEntries(opts.map(o => [o, 0]));
+          st.by_sec_tier[secShort][chosen] += 1;
+          if (!st.by_age_band[ageB]) st.by_age_band[ageB] = Object.fromEntries(opts.map(o => [o, 0]));
+          st.by_age_band[ageB][chosen] += 1;
+        });
+
+        rawResponses.push(row);
+      });
+
+      return {
+        survey_title: surveyTitle,
+        total_respondents: targetPanel.length,
+        question_results: Object.values(qStats),
+        raw_responses: rawResponses
+      };
+    }
+
+    async function runQuantSimulation() {
+      const btn = document.getElementById("btn-run-sim");
+      const origHtml = btn.innerHTML;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Simulating...</span>`;
+      btn.disabled = true;
+
+      try {
+        if (isBackendOnline) {
+          const res = await fetch(`${API_BASE}/api/quant/simulate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              survey_title: currentQNR.survey_title,
+              filters: getQuantFiltersFromUI(),
+              questions: currentQNR.questions
+            })
+          });
+          lastQuantResult = await res.json();
+        } else {
+          await new Promise(r => setTimeout(r, 350));
+          lastQuantResult = simulateQuantLocally(currentQNR.survey_title, getQuantFiltersFromUI(), currentQNR.questions);
+        }
+
+        document.getElementById("badge-quant-status").textContent = `N=${lastQuantResult.total_respondents}`;
+        document.getElementById("badge-quant-status").className = "font-bold text-emerald-400";
+        document.getElementById("btn-download-csv").classList.remove("hidden");
+        document.getElementById("btn-send-to-report").classList.remove("hidden");
+
+        renderQuantCanvas();
+      } catch (e) {
+        lastQuantResult = simulateQuantLocally(currentQNR.survey_title, getQuantFiltersFromUI(), currentQNR.questions);
+        renderQuantCanvas();
+      } finally {
+        btn.innerHTML = origHtml;
+        btn.disabled = false;
+      }
+    }
+
+    function downloadQuantCSV() {
+      if (!lastQuantResult || !lastQuantResult.raw_responses) return;
+      const rows = lastQuantResult.raw_responses;
+      const qIds = currentQNR.questions.map(q => q.q_id);
+      const header = ["panel_id", "name", "gender", "age", "age_band", "region", "life_phase", "religion", "occupation", "monthly_income", "annual_income", "sec_tier", "disposable_comfort", ...qIds];
+
+      const csvLines = [header.join(",")];
+      rows.forEach(r => {
+        const vals = [
+          r.panel_id, r.name, r.gender, r.age, r.age_band, `"${r.region}"`, `"${r.life_phase}"`,
+          r.religion, `"${r.occupation}"`, `"${r.monthly_income}"`, `"${r.annual_income}"`,
+          `"${r.sec_tier}"`, `"${r.disposable_comfort}"`,
+          ...qIds.map(qid => `"${(r.answers[qid] || '').replace(/"/g, '""')}"`)
+        ];
+        csvLines.push(vals.join(","));
+      });
+
+      const blob = new Blob(["\uFEFF" + csvLines.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `KoreanPersona_quant_${currentLang}_N${rows.length}.csv`;
+      a.click();
+    }
+
+    // =========================================================================
+    // MODE 3: INTEGRATED INSIGHT REPORT STUDIO
+    // =========================================================================
+    function renderReportAssetsTray() {
+      const box = document.getElementById("report-assets-summary");
+      const qualSummary = savedQualClips.length > 0
+        ? savedQualClips.map(c => `<div class="p-1.5 bg-white rounded border border-slate-200 truncate">📌 <strong>${c.name}(${c.sec_tier})</strong>: "${escapeHtml(c.reply.slice(0, 45))}..."</div>`).join("")
+        : `<div class="text-slate-400">No qualitative clips saved yet (Save in Mode 1).</div>`;
+
+      const quantSummary = lastQuantResult
+        ? `<div class="p-1.5 bg-emerald-50 text-emerald-900 rounded border border-emerald-200 font-semibold">📊 Quant Survey Ready: ${escapeHtml(lastQuantResult.survey_title)} (N=${lastQuantResult.total_respondents})</div>`
+        : `<div class="text-slate-400">No quantitative simulation run yet (Run in Mode 2).</div>`;
+
+      box.innerHTML = `${quantSummary}<div class="space-y-1 mt-1">${qualSummary}</div>`;
+    }
+
+    function renderInitialReportCanvas() {
+      const t = I18N[currentLang] || I18N.ko;
+      const canvas = document.getElementById("report-document-canvas");
+      canvas.innerHTML = `
+        <div class="border-b border-slate-200 pb-4">
+          <span class="px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 font-bold text-xs">Global Multi-Language Research Studio (${currentLang.toUpperCase()})</span>
+          <h1 class="text-2xl font-extrabold text-slate-900 mt-2">${escapeHtml(t.m3Title)}</h1>
+          <p class="text-xs text-slate-500 mt-1">thedrk.com/portfolio/KoreanPersona · 30 Qual Personas + 120 Quant Panel + 2021~2026 Archive</p>
+        </div>
+        <div class="p-6 bg-slate-50 rounded-xl border border-dashed border-slate-300 text-center space-y-3">
+          <i class="fa-solid fa-earth-asia text-3xl text-indigo-500"></i>
+          <div class="text-sm font-bold text-slate-800">${escapeHtml(t.btnGenFull)}</div>
+          <p class="text-xs text-slate-500 max-w-lg mx-auto leading-relaxed">${escapeHtml(t.m3Sub)}</p>
+        </div>
+      `;
+    }
+
+    function generateStandaloneReportMarkdown(instruction, lang) {
+      const qTitle = lastQuantResult ? lastQuantResult.survey_title : currentQNR.survey_title;
+      const totalN = lastQuantResult ? lastQuantResult.total_respondents : 120;
+      const qLines = (lastQuantResult?.question_results || []).map(qr => {
+        const topEntry = Object.entries(qr.counts || {}).sort((a, b) => b[1] - a[1])[0] || ["N/A", 0];
+        const pct = Math.round((topEntry[1] / Math.max(1, totalN)) * 1000) / 10;
+        return `- **[${qr.q_id}] ${qr.question_text}** — Top Response: **${topEntry[0]}** (${topEntry[1]}명 / ${pct}%)`;
+      }).join("\n");
+
+      const qualLines = savedQualClips.length > 0
+        ? savedQualClips.map(c => `- **${c.name} (${c.gender}/${c.age}, ${c.occupation}, ${c.sec_tier})**: "${c.reply.replace(/\n/g, ' ')}"`).join("\n")
+        : `- **최유나 (여/32, 핀테크 PM, SEC B)**: "검증된 품질과 성분 투명성이 보장된다면 15~20% 프리미엄 가격을 지불할 의향이 충분합니다."\n- **최현우 (남/37, 인테리어 대표, SEC A)**: "맞벌이 및 육아 가구 특성상 가사 노동 시간을 줄여주는 원클릭 편의성이 구매 전환의 핵심입니다."`;
+
+      if (lang === "en") {
+        return `# 📊 Executive Research Report: ${qTitle}\n\n## 1. Executive Summary\nBased on Direct Research Korea's 2021–2026 multi-industry screener standards, this synthesis integrates qualitative persona interviews and a quantitative simulation (N=${totalN}). South Korean consumers demonstrate clear polarization by Socio-Economic Class (SEC): **SEC A+/A/B households** prioritize time-saving convenience and verified safety over price, showing strong willingness to pay a 20–30% premium.\n\n## 2. Quantitative Insights (120-Panel Simulation & SEC Crosstabs)\n${qLines || "- Run the Mode 2 simulation to populate live question breakdown metrics."}\n- **SEC Income Tier Crosstab Insight**: Upper-middle and high-income tiers (SEC A+, SEC A, SEC B) exhibit +24% higher Top-2-Box purchase intent compared to entry-career SEC C2/D tiers.\n\n## 3. Qualitative Deep-Dive (30-Persona Verbatims)\n${qualLines}\n\n## 4. Historical Benchmark (2021–2026 Korean Archive)\n- Consistent with 2021–2026 Korean FGD & CLT benchmarks, hidden fees, unclear specifications, and high switching friction remain the primary barriers to adoption.\n\n## 5. Strategic Action Plan & Target Positioning\n- **Core Target**: Dual-income 3040 households & high-disposable-comfort 1-person professionals (SEC B+ / D5 Level 3–4).\n- **Value Proposition**: Emphasize verified clinical/performance metrics and time-saving UX rather than discount-driven positioning.`;
+      } else if (lang === "ja") {
+        return `# 📊 エグゼクティブ調査レポート: ${qTitle}\n\n## 1. エグゼクティブ・サマリー\nDirect Research Koreaの2021〜2026年スクリーナー基準に基づく定性ペルソナ発言および定量パネルシミュレーション（N=${totalN}）の統合分析結果です。韓国市場では世帯所得階層（SEC）による二極化が鮮明であり、**SEC A+/A/B（中上位〜高所得層）**では時間短縮・利便性と実証された品質に対して20〜30%のプレミアム価格を受容する傾向が確認されました。\n\n## 2. 定量調査インサイト (N=${totalN} 統計＆SECクロス集計)\n${qLines || "- Mode 2でシミュレーションを実行すると設問別集計が反映されます。"}\n\n## 3. 定性ディープダイブ (韓国人ペルソナ発言録)\n${qualLines}\n\n## 4. 2021〜2026年 韓国リサーチアーカイブ比較\n- 過去6年間の韓国現地FGD・CLT調査と同様、口コミの信頼性と明確な機能エビデンスが初期トライアルの最重要ドライバーとなっています。\n\n## 5. 戦略的アクションプラン\n- **最優先ターゲット**: 可処分所得余裕度（D5 Level 3〜4）が高い30〜40代共働き世帯および専門職シングル層（SEC B以上）。`;
+      }
+      return `# 📊 통합 인사이트 리포트: ${qTitle}\n\n## 1. Executive Summary (핵심 요약)\n본 보고서는 2021~2026년 한국 소비자 스크리너 표준에 기반한 **30인 정성 페르소나 심층 인터뷰(Mode 1)**와 **정량 마스터 패널 시뮬레이션(Mode 2, N=${totalN})** 결과를 통합 분석한 자료입니다. 조사 결과, 가구 소득 등급(**SEC Tier**) 및 주관적 가처분 여유도(**D5**)에 따라 가격 수용성과 핵심 구매 동기가 뚜렷하게 차별화되는 것으로 나타났습니다.\n\n## 2. Quantitative Insights (정량 시뮬레이션 및 SEC 소득 교차분석)\n${qLines || "- Mode 2에서 시뮬레이션을 실행하면 문항별 최다 응답 통계가 자동 삽입됩니다."}\n- **SEC 소득 계층별 교차분석 핵심**: 연 가구소득 8,000만원 이상(**SEC B / SEC A / SEC A+**) 및 가처분 여유도 Level 4 집단에서 프리미엄 라인업(20~30% 추가 지불) 선호도와 초기 구매 전환 의향(Top-2-Box)이 중저소득층 대비 유의미하게 높게 나타났습니다.\n\n## 3. Qualitative Deep-Dive (정성 페르소나 핵심 Verbatim)\n${qualLines}\n\n## 4. Historical Benchmark (2021~2026 리서치 아카이브 비교)\n- 당사 2021~2026년 축적 데이터와 비교할 때, 한국 소비자들은 단순 브랜드 인지도보다 **'실사용자 검증 후기', '성분·가격 투명성', '가사/일상 시간 단축(Time-Saving)'** 가치가 입증될 때 브랜드 전환(Switching)을 결단하는 경향이 한층 강화되었습니다.\n\n## 5. Strategic Action Plan (마케팅 및 타깃 포지셔닝 제언)\n- **1차 핵심 타깃**: 3040 맞벌이 유자녀·딩크 가구 및 고소득 1인 전문직(**SEC B 이상, D5 Level 3~4**).\n- **포지셔닝 전략**: 초기 진입 시 단순 가격 할인보다 핵심 페인포인트 해결 성능과 소용량 체험/무료 취소 등 진입 장벽 완화 장치를 결합하는 전략이 유효합니다.`;
+    }
+
+    async function generateFullReport(customInstruction) {
+      const t = I18N[currentLang] || I18N.ko;
+      const instruction = customInstruction || t.defaultReportPrompt;
+      const stream = document.getElementById("report-chat-stream");
+      const canvas = document.getElementById("report-document-canvas");
+
+      stream.insertAdjacentHTML("beforeend", `
+        <div class="flex justify-end">
+          <div class="max-w-[82%] bg-indigo-600 text-white rounded-2xl rounded-tr-sm px-3.5 py-2 text-xs font-medium">
+            ${escapeHtml(instruction)}
+          </div>
+        </div>
+      `);
+
+      canvas.innerHTML = `
+        <div class="py-16 text-center space-y-3">
+          <i class="fa-solid fa-circle-notch fa-spin text-3xl text-indigo-600"></i>
+          <div class="font-bold text-sm text-slate-800">Synthesizing Executive Report in ${currentLang.toUpperCase()} (${getSelectedModel()})...</div>
+        </div>
+      `;
+
+      let sources = [
+        { source: "2021–2026 Korean Screener & SEC Archive", timestamp: "Verified" },
+        { source: "30 Qualitative Persona Matrix", timestamp: "Mode 1" },
+        { source: "120 Quantitative Master Panel", timestamp: "Mode 2" }
+      ];
+
+      if (isBackendOnline) {
+        try {
+          const res = await fetch(`${API_BASE}/api/report/generate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              instruction: instruction,
+              qual_clips: savedQualClips,
+              quant_summary: lastQuantResult,
+              lang: currentLang,
+              model: getSelectedModel()
+            })
+          });
+          const data = await res.json();
+          currentReportMarkdown = data.report_markdown || "";
+          if (data.sources && data.sources.length > 0) sources = data.sources;
+        } catch (e) {
+          currentReportMarkdown = "";
+        }
+      }
+
+      if (!currentReportMarkdown) {
+        await new Promise(r => setTimeout(r, 420));
+        currentReportMarkdown = generateStandaloneReportMarkdown(instruction, currentLang);
+      }
+
+      canvas.innerHTML = formatMarkdownToHtml(currentReportMarkdown, sources);
+      stream.insertAdjacentHTML("beforeend", `
+        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-xs text-emerald-900 font-medium">
+          ✅ Report generated in ${currentLang.toUpperCase()}.
+        </div>
+      `);
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    function sendReportInstruction() {
+      const el = document.getElementById("report-chat-input");
+      const val = el.value.trim();
+      if (!val) return;
+      el.value = "";
+      generateFullReport(val);
+    }
+
+    function copyReportMarkdown() {
+      if (!currentReportMarkdown) return;
+      navigator.clipboard.writeText(currentReportMarkdown);
+      alert("Markdown copied to clipboard!");
+    }
+
+    function formatMarkdownToHtml(md, sources) {
+      let html = escapeHtml(md)
+        .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-extrabold text-slate-900 border-b border-slate-200 pb-3 mb-4">$1</h1>')
+        .replace(/^## (.*$)/gim, '<h2 class="text-lg font-extrabold text-indigo-950 mt-6 mb-2 flex items-center gap-2"><span class="w-1.5 h-5 bg-indigo-600 rounded-full inline-block"></span>$1</h2>')
+        .replace(/^### (.*$)/gim, '<h3 class="text-sm font-bold text-slate-800 mt-4 mb-1">$1</h3>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-900 bg-amber-50/70 px-0.5 rounded">$1</strong>')
+        .replace(/^\- (.*$)/gim, '<li class="ml-4 list-disc text-xs text-slate-700 leading-relaxed my-1">$1</li>')
+        .replace(/\n\n/g, '<div class="my-2.5"></div>')
+        .replace(/\n/g, '<br/>');
+
+      const srcBadges = (sources || []).map(s => `
+        <span class="px-2 py-1 rounded bg-slate-100 border border-slate-200 text-[10px] text-slate-600 font-medium">
+          📚 ${escapeHtml(s.source)} (${escapeHtml(s.timestamp)})
+        </span>
+      `).join("");
+
+      return `
+        <article class="prose max-w-none text-xs text-slate-700 leading-relaxed">${html}</article>
+        <div class="mt-8 pt-4 border-t border-slate-200">
+          <div class="text-[11px] font-bold text-slate-500 mb-2">🔍 2021~2026 Korean Research Archive Citations (Vector DB)</div>
+          <div class="flex flex-wrap gap-1.5">${srcBadges}</div>
+        </div>
+      `;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+  </script>
+</body>
+</html>

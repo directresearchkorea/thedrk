@@ -1,0 +1,7 @@
+# Exclude SyntheticKorean backend deploy package (contains internal docs, scripts, and raw vector DB)
+portfolio/SyntheticKorean_Deploy_Package/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.DS_Store
