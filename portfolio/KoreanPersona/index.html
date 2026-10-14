@@ -39,12 +39,23 @@
         KP
       </a>
       <div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
           <h1 class="font-bold text-sm lg:text-base tracking-tight" id="ui-brand-title">Korean Synthetic Consumer Studio</h1>
           <span class="px-2 py-0.5 text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 rounded-full">v2.1 Global</span>
-          <span class="hidden xl:inline-block px-2 py-0.5 text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 rounded-full">KO · EN · JA · ZH · ID</span>
+          <!-- Interactive 5-Language Toggle Bar (KO · EN · JA · ZH · ID) -->
+          <div id="header-lang-toggle" class="inline-flex items-center bg-slate-800/95 border border-emerald-500/40 rounded-full p-0.5 gap-0.5 shadow-inner" role="group" aria-label="Language Toggle">
+            <button type="button" onclick="switchLanguage('ko')" data-lang="ko" class="lang-toggle-btn px-2 py-0.5 text-[10px] font-extrabold rounded-full transition-all bg-emerald-500 text-slate-950 shadow-sm">KO</button>
+            <span class="text-slate-600 text-[9px] select-none">·</span>
+            <button type="button" onclick="switchLanguage('en')" data-lang="en" class="lang-toggle-btn px-2 py-0.5 text-[10px] font-bold rounded-full transition-all text-emerald-300 hover:text-white hover:bg-slate-700/70">EN</button>
+            <span class="text-slate-600 text-[9px] select-none">·</span>
+            <button type="button" onclick="switchLanguage('ja')" data-lang="ja" class="lang-toggle-btn px-2 py-0.5 text-[10px] font-bold rounded-full transition-all text-emerald-300 hover:text-white hover:bg-slate-700/70">JA</button>
+            <span class="text-slate-600 text-[9px] select-none">·</span>
+            <button type="button" onclick="switchLanguage('zh')" data-lang="zh" class="lang-toggle-btn px-2 py-0.5 text-[10px] font-bold rounded-full transition-all text-emerald-300 hover:text-white hover:bg-slate-700/70">ZH</button>
+            <span class="text-slate-600 text-[9px] select-none">·</span>
+            <button type="button" onclick="switchLanguage('id')" data-lang="id" class="lang-toggle-btn px-2 py-0.5 text-[10px] font-bold rounded-full transition-all text-emerald-300 hover:text-white hover:bg-slate-700/70">ID</button>
+          </div>
         </div>
-        <p class="text-[11px] text-slate-400 truncate max-w-[420px]" id="ui-brand-sub"><a href="/portfolio/" class="hover:text-indigo-300 underline">thedrk.com/portfolio/KoreanPersona</a> · 30 Qual Personas + 120 Quant Panel</p>
+        <p class="text-[11px] text-slate-400 truncate max-w-[460px]" id="ui-brand-sub"><a href="/portfolio/" class="hover:text-indigo-300 underline">thedrk.com/portfolio/KoreanPersona</a> · 30 Qual Personas + 120 Quant Panel</p>
       </div>
     </div>
 
@@ -64,20 +75,8 @@
       </button>
     </nav>
 
-    <!-- LANGUAGE SELECTOR, LLM MODEL SELECTOR & SESSION STATUS -->
+    <!-- LLM MODEL SELECTOR & SESSION STATUS -->
     <div class="flex items-center gap-2 text-xs shrink-0">
-      <!-- 5-Language Switcher -->
-      <div class="flex items-center bg-slate-800 border border-indigo-500/40 rounded-lg px-2 py-1 gap-1.5">
-        <i class="fa-solid fa-globe text-indigo-400 text-xs"></i>
-        <select id="global-lang-select" onchange="switchLanguage(this.value)" class="bg-slate-800 text-white font-bold text-xs focus:outline-none cursor-pointer">
-          <option value="ko">🇰🇷 한국어 (KO)</option>
-          <option value="en">🇺🇸 English (EN)</option>
-          <option value="ja">🇯🇵 日本語 (JA)</option>
-          <option value="zh">🇨🇳 中文 (ZH)</option>
-          <option value="id">🇮🇩 Bahasa Indonesia (ID)</option>
-        </select>
-      </div>
-
       <!-- Local LLM Model Switcher -->
       <div class="hidden lg:flex items-center bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 gap-1.5" title="로컬 Ollama LLM 모델 선택">
         <i class="fa-solid fa-microchip text-emerald-400 text-xs"></i>
@@ -623,9 +622,113 @@
       }
     }
 
+    function getPersonaLocalized(p, lang) {
+      const loc = (p.i18n && (p.i18n[lang] || p.i18n.ko)) || {};
+      const inc = p.income_profile || {};
+      return {
+        id: p.id,
+        age: p.age,
+        age_band: p.age_band,
+        raw_gender: p.gender,
+        sec_tier: inc.sec_tier || p.income_band || "SEC B",
+        brand_satisfaction_score: p.brand_satisfaction_score || 8,
+        name: loc.name || p.name,
+        gender: loc.gender || p.gender,
+        occupation: loc.occupation || p.occupation,
+        life_phase: loc.life_phase || p.life_phase,
+        religion: loc.religion || p.religion,
+        residence: loc.residence || p.residence,
+        income_band: loc.income_band || inc.monthly_household_income || p.income_band,
+        disposable_comfort: loc.disposable_comfort || inc.disposable_comfort || "Level 3",
+        target_category: loc.target_category || p.target_category,
+        current_brand: loc.current_brand || p.current_brand,
+        source_project: loc.source_project || p.source_project,
+        key_motivations: loc.key_motivations || p.key_motivations || [],
+        pain_points: loc.pain_points || p.pain_points || [],
+        ideal_product_needs: loc.ideal_product_needs || p.ideal_product_needs || ""
+      };
+    }
+
+    const FILTER_I18N = {
+      ko: {
+        gender: [["전체", "성별 전체 (30)"], ["남성", "남성 (15)"], ["여성", "여성 (15)"]],
+        age: [["전체", "연령 전체"], ["20대", "20대"], ["30대", "30대"], ["40대", "40대"], ["50대+", "50~60대+"]],
+        sec: [["전체", "소득(SEC) 전체"], ["SEC A+", "SEC A+ (초고소득)"], ["SEC A", "SEC A (고소득)"], ["SEC B", "SEC B (중상위)"], ["SEC C", "SEC C1/C2 (중위)"]],
+        domain: [["전체", "카테고리 전체"], ["게이밍", "게이밍 / OTT"], ["여행", "여행 / 숙박 OTA"], ["청소", "리빙 / 세제·청소가전"], ["반려", "반려동물 / 동물병원"], ["유모차", "육아 / 교육"], ["볼보", "수입차 / 모빌리티"], ["룰루레몬", "패션 / 뷰티"], ["맥주", "주류 / 식음료"]],
+        lblIncome: "가구 소득:", lblComfort: "가처분 여유(D5):", lblSource: "기반 조사:", lblPains: "핵심 페인포인트:",
+        welcomeTitle: "5개 국어 동시통역 한국 소비자 심층 인터뷰 (KO · EN · JA · ZH · ID)",
+        welcomeActive: "현재 선택된 페르소나:",
+        welcomeDesc: "상단 타이틀 옆의 <strong>KO · EN · JA · ZH · ID</strong> 토글 버튼을 클릭하면 30인 페르소나 카드 프로필과 인터뷰 응답 언어가 즉시 전환됩니다."
+      },
+      en: {
+        gender: [["전체", "All Gender (30)"], ["남성", "Male (15)"], ["여성", "Female (15)"]],
+        age: [["전체", "All Ages"], ["20대", "20s"], ["30대", "30s"], ["40대", "40s"], ["50대+", "50s–60s+"]],
+        sec: [["전체", "All SEC Income"], ["SEC A+", "SEC A+ (Top)"], ["SEC A", "SEC A (High)"], ["SEC B", "SEC B (Upper-Mid)"], ["SEC C", "SEC C1/C2 (Mid)"]],
+        domain: [["전체", "All Domains"], ["게이밍", "Gaming / OTT"], ["여행", "Travel / OTA"], ["청소", "Home / Detergent"], ["반려", "Pet / Vet Care"], ["유모차", "Baby / Education"], ["볼보", "Auto / Mobility"], ["룰루레몬", "Fashion / Beauty"], ["맥주", "Alcohol / F&B"]],
+        lblIncome: "Income:", lblComfort: "D5 Comfort:", lblSource: "Source Screener:", lblPains: "Pain Points:",
+        welcomeTitle: "Multi-Language Simultaneous Persona Interview (KO · EN · JA · ZH · ID)",
+        welcomeActive: "Active Persona:",
+        welcomeDesc: "Click the <strong>KO · EN · JA · ZH · ID</strong> toggle buttons next to the studio title — all 30 persona cards, 4D profiles, and interview responses switch immediately."
+      },
+      ja: {
+        gender: [["전체", "性別 全体 (30)"], ["남성", "男性 (15)"], ["여성", "女性 (15)"]],
+        age: [["전체", "全年代"], ["20대", "20代"], ["30대", "30代"], ["40대", "40代"], ["50대+", "50〜60代+"]],
+        sec: [["전체", "所得(SEC) 全体"], ["SEC A+", "SEC A+ (最上位)"], ["SEC A", "SEC A (高所得)"], ["SEC B", "SEC B (中上位)"], ["SEC C", "SEC C1/C2 (中位)"]],
+        domain: [["전체", "全カテゴリー"], ["게이밍", "ゲーム / OTT"], ["여행", "旅行 / OTA"], ["청소", "生活 / 洗剤・掃除家電"], ["반려", "ペット / 動物病院"], ["유모차", "育児 / 教育"], ["볼보", "輸入車 / モビリティ"], ["룰루레몬", "ファッション / 美容"], ["맥주", "酒類 / 飲料"]],
+        lblIncome: "世帯所得:", lblComfort: "家計余裕度(D5):", lblSource: "調査ベース:", lblPains: "主な不満(Pain Points):",
+        welcomeTitle: "5ヶ国語同時通訳 韓国消費者デプスインタビュー (KO · EN · JA · ZH · ID)",
+        welcomeActive: "選択中のペルソナ:",
+        welcomeDesc: "上部タイトル横の <strong>KO · EN · JA · ZH · ID</strong> トグルボタンを押すと、30人のペルソナカードとインタビュー回答言語が即座に切り替わります。"
+      },
+      zh: {
+        gender: [["전체", "全部性别 (30)"], ["남성", "男性 (15)"], ["여성", "女性 (15)"]],
+        age: [["전체", "全部年龄"], ["20대", "20多岁"], ["30대", "30多岁"], ["40대", "40多岁"], ["50대+", "50~60岁+"]],
+        sec: [["전체", "全部收入(SEC)"], ["SEC A+", "SEC A+ (顶层)"], ["SEC A", "SEC A (高收入)"], ["SEC B", "SEC B (中上收入)"], ["SEC C", "SEC C1/C2 (中等)"]],
+        domain: [["전체", "全部品类"], ["게이밍", "游戏 / 娱乐"], ["여행", "旅游 / OTA住宿"], ["청소", "家清 / 清洁家电"], ["반려", "宠物 / 动物医院"], ["유모차", "母婴 / 教育"], ["볼보", "豪华汽车 / 出行"], ["룰루레몬", "运动时尚 / 美妆"], ["맥주", "酒水 / 餐饮"]],
+        lblIncome: "家庭收入:", lblComfort: "可支配宽裕度(D5):", lblSource: "甄别来源:", lblPains: "核心痛点:",
+        welcomeTitle: "五语同传 韩国消费者定性深访室 (KO · EN · JA · ZH · ID)",
+        welcomeActive: "当前选定画像:",
+        welcomeDesc: "点击顶部标题右侧的 <strong>KO · EN · JA · ZH · ID</strong> 切换按钮，30位韩国消费者画像卡片与深访回答语言将立即同步切换。"
+      },
+      id: {
+        gender: [["전체", "Semua Gender (30)"], ["남성", "Pria (15)"], ["여성", "Wanita (15)"]],
+        age: [["전체", "Semua Usia"], ["20대", "20-an"], ["30대", "30-an"], ["40대", "40-an"], ["50대+", "50–60an+"]],
+        sec: [["전체", "Semua SEC Pendapatan"], ["SEC A+", "SEC A+ (Teratas)"], ["SEC A", "SEC A (Tinggi)"], ["SEC B", "SEC B (Menengah-Atas)"], ["SEC C", "SEC C1/C2 (Menengah)"]],
+        domain: [["전체", "Semua Kategori"], ["게이밍", "Gaming / OTT"], ["여행", "Travel / OTA"], ["청소", "Rumah / Deterjen"], ["반려", "Hewan / Klinik Vet"], ["유모차", "Bayi / Edukasi"], ["볼보", "Otomotif / SUV"], ["룰루레몬", "Fashion / Kecantikan"], ["맥주", "Minuman / F&B"]],
+        lblIncome: "Pendapatan:", lblComfort: "Kenyamanan D5:", lblSource: "Sumber Screener:", lblPains: "Pain Points:",
+        welcomeTitle: "Wawancara Persona Konsumen Korea 5 Bahasa (KO · EN · JA · ZH · ID)",
+        welcomeActive: "Persona Aktif:",
+        welcomeDesc: "Klik tombol toggle <strong>KO · EN · JA · ZH · ID</strong> di sebelah judul atas — seluruh 30 kartu persona, profil 4D, dan bahasa wawancara akan langsung berubah."
+      }
+    };
+
+    function updateFilterSelectOptions(selectId, pairs) {
+      const sel = document.getElementById(selectId);
+      if (!sel) return;
+      const curVal = sel.value || "전체";
+      sel.innerHTML = pairs.map(([val, label]) => `<option value="${val}">${escapeHtml(label)}</option>`).join("");
+      sel.value = curVal;
+    }
+
     function switchLanguage(lang) {
       currentLang = lang;
       const t = I18N[lang] || I18N.ko;
+      const ft = FILTER_I18N[lang] || FILTER_I18N.ko;
+
+      // Update active state on header KO · EN · JA · ZH · ID toggle buttons
+      document.querySelectorAll(".lang-toggle-btn").forEach(btn => {
+        if (btn.getAttribute("data-lang") === lang) {
+          btn.className = "lang-toggle-btn px-2 py-0.5 text-[10px] font-extrabold rounded-full transition-all bg-emerald-500 text-slate-950 shadow-sm";
+        } else {
+          btn.className = "lang-toggle-btn px-2 py-0.5 text-[10px] font-bold rounded-full transition-all text-emerald-300 hover:text-white hover:bg-slate-700/70";
+        }
+      });
+
+      // Localize Mode 1 filter option labels while keeping underlying filter values
+      updateFilterSelectOptions("qual-filter-gender", ft.gender);
+      updateFilterSelectOptions("qual-filter-age", ft.age);
+      updateFilterSelectOptions("qual-filter-sec", ft.sec);
+      updateFilterSelectOptions("qual-filter-domain", ft.domain);
 
       document.getElementById("ui-tab1").textContent = t.tab1;
       document.getElementById("ui-tab2").textContent = t.tab2;
@@ -668,6 +771,11 @@
           `).join("")}
         </div>
       `;
+
+      // Re-render 30 Persona Cards, Active 4D Persona Profile, and Welcome Banner in the selected language
+      renderQualPersonaList();
+      renderActivePersonaProfile();
+      clearQualChat();
 
       setDefaultQNRForLanguage(lang);
       renderQuantCanvas();
@@ -737,7 +845,12 @@
           const res = await fetch(`${API_BASE}/api/personas`);
           const data = await res.json();
           if (data.personas && data.personas.length > 0) {
-            allQualPersonas = data.personas;
+            // Merge i18n from STATIC_QUAL_PERSONAS if server returns raw JSON without i18n
+            const staticMap = Object.fromEntries((window.STATIC_QUAL_PERSONAS || []).map(sp => [sp.id, sp]));
+            allQualPersonas = data.personas.map(p => ({
+              ...p,
+              i18n: p.i18n || staticMap[p.id]?.i18n
+            }));
           }
         } catch (e) {
           console.warn("Using embedded static personas:", e);
@@ -771,10 +884,10 @@
     }
 
     function renderQualPersonaList() {
-      const gFilter = document.getElementById("qual-filter-gender").value;
-      const aFilter = document.getElementById("qual-filter-age").value;
-      const sFilter = document.getElementById("qual-filter-sec").value;
-      const dFilter = document.getElementById("qual-filter-domain").value;
+      const gFilter = document.getElementById("qual-filter-gender")?.value || "전체";
+      const aFilter = document.getElementById("qual-filter-age")?.value || "전체";
+      const sFilter = document.getElementById("qual-filter-sec")?.value || "전체";
+      const dFilter = document.getElementById("qual-filter-domain")?.value || "전체";
 
       const filtered = allQualPersonas.filter(p => {
         if (gFilter !== "전체" && p.gender !== gFilter) return false;
@@ -784,34 +897,36 @@
           if (!secStr.includes(sFilter)) return false;
         }
         if (dFilter !== "전체") {
-          const blob = `${p.target_category} ${p.current_brand} ${p.source_project}`;
+          const koLoc = p.i18n?.ko || {};
+          const blob = `${p.target_category} ${p.current_brand} ${p.source_project} ${koLoc.target_category || ''} ${koLoc.current_brand || ''}`;
           if (!blob.includes(dFilter)) return false;
         }
         return true;
       });
 
       const container = document.getElementById("qual-persona-list");
-      container.innerHTML = filtered.map(p => {
+      container.innerHTML = filtered.map(rawP => {
+        const p = getPersonaLocalized(rawP, currentLang);
         const isSelected = selectedPersonaIds.includes(p.id);
-        const secBadge = (p.income_profile?.sec_tier || "SEC B").split(" ")[0] + " " + ((p.income_profile?.sec_tier || "SEC B").split(" ")[1] || "");
-        const genderColor = p.gender === "남성" ? "bg-blue-100 text-blue-700" : "bg-rose-100 text-rose-700";
+        const secBadge = (rawP.income_profile?.sec_tier || "SEC B").split(" ")[0] + " " + ((rawP.income_profile?.sec_tier || "SEC B").split(" ")[1] || "");
+        const genderColor = rawP.gender === "남성" ? "bg-blue-100 text-blue-700" : "bg-rose-100 text-rose-700";
         return `
           <div onclick="togglePersonaSelection('${p.id}')" 
                class="cursor-pointer p-2.5 rounded-xl border border-slate-200 hover:border-indigo-400 bg-white transition-all flex flex-col justify-between ${isSelected ? 'persona-card-selected ring-2 ring-indigo-500/20' : ''}">
             <div>
               <div class="flex items-center justify-between mb-1">
-                <div class="flex items-center gap-1.5">
-                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${genderColor}">${p.id.split('_')[0]}</span>
-                  <span class="font-bold text-xs text-slate-900">${p.name}</span>
-                  <span class="text-[11px] text-slate-500">${p.age}</span>
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0 ${genderColor}">${p.id.split('_')[0]}</span>
+                  <span class="font-bold text-xs text-slate-900 truncate">${escapeHtml(p.name)}</span>
+                  <span class="text-[11px] text-slate-500 shrink-0">${p.age}</span>
                 </div>
-                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-bold text-[10px]">${secBadge}</span>
+                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-bold text-[10px] shrink-0">${escapeHtml(secBadge)}</span>
               </div>
-              <div class="text-[11px] text-slate-600 font-medium truncate">${p.occupation}</div>
-              <div class="text-[10px] text-slate-400 truncate mt-0.5">${p.life_phase} · ${p.religion}</div>
+              <div class="text-[11px] text-slate-600 font-medium truncate" title="${escapeHtml(p.occupation)}">${escapeHtml(p.occupation)}</div>
+              <div class="text-[10px] text-slate-400 truncate mt-0.5" title="${escapeHtml(p.life_phase)} · ${escapeHtml(p.religion)}">${escapeHtml(p.life_phase)} · ${escapeHtml(p.religion)}</div>
             </div>
             <div class="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between">
-              <span class="text-[10px] font-semibold text-indigo-600 truncate">${p.target_category}</span>
+              <span class="text-[10px] font-semibold text-indigo-600 truncate" title="${escapeHtml(p.target_category)}">${escapeHtml(p.target_category)}</span>
             </div>
           </div>
         `;
@@ -837,11 +952,16 @@
     }
 
     function renderActivePersonaProfile() {
-      const activeList = allQualPersonas.filter(p => selectedPersonaIds.includes(p.id));
-      if (activeList.length === 0) return;
+      const activeRawList = allQualPersonas.filter(p => selectedPersonaIds.includes(p.id));
+      if (activeRawList.length === 0) return;
 
+      const activeList = activeRawList.map(rawP => getPersonaLocalized(rawP, currentLang));
       const p = activeList[0];
-      const inc = p.income_profile || {};
+      const rawP = activeRawList[0];
+      const inc = rawP.income_profile || {};
+      const secBadge = (inc.sec_tier || "SEC B").split(" ").slice(0, 2).join(" ");
+      const ft = FILTER_I18N[currentLang] || FILTER_I18N.ko;
+
       const badgeEl = document.getElementById("chat-room-badge");
       const titleEl = document.getElementById("chat-room-title");
 
@@ -856,33 +976,36 @@
       }
 
       document.getElementById("qual-active-profile").innerHTML = `
-        <div class="flex items-center justify-between mb-1.5">
-          <div class="flex items-center gap-2">
-            <span class="font-extrabold text-sm text-white">${p.name} (${p.gender}, ${p.age})</span>
-            <span class="px-2 py-0.5 rounded bg-indigo-500/30 text-indigo-200 text-[10px] font-bold">${p.life_phase} · ${p.religion}</span>
+        <div class="flex items-center justify-between mb-1.5 gap-2">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="font-extrabold text-sm text-white truncate">${escapeHtml(p.name)} (${escapeHtml(p.gender)}, ${p.age})</span>
+            <span class="px-2 py-0.5 rounded bg-indigo-500/30 text-indigo-200 text-[10px] font-bold truncate">${escapeHtml(p.life_phase)} · ${escapeHtml(p.religion)}</span>
           </div>
-          <span class="text-[10px] text-emerald-300 font-semibold">${inc.sec_tier || p.income_band}</span>
+          <span class="text-[10px] text-emerald-300 font-semibold shrink-0">${escapeHtml(secBadge)}</span>
         </div>
         <div class="grid grid-cols-2 gap-1.5 text-[11px] bg-slate-800/90 p-2 rounded-lg border border-slate-700 mb-2">
-          <div><span class="text-slate-400">Income:</span> <span class="text-slate-100 font-medium">${inc.monthly_household_income || p.income_band} (${inc.annual_household_income || ''})</span></div>
-          <div><span class="text-slate-400">D5 Comfort:</span> <span class="text-amber-300 font-medium">${inc.disposable_comfort || 'Level 3'}</span></div>
-          <div class="col-span-2 truncate"><span class="text-slate-400">Source Screener:</span> <span class="text-indigo-300 font-semibold">${p.source_project}</span></div>
+          <div class="truncate" title="${escapeHtml(p.income_band)}"><span class="text-slate-400">${escapeHtml(ft.lblIncome)}</span> <span class="text-slate-100 font-medium">${escapeHtml(p.income_band)}</span></div>
+          <div class="truncate" title="${escapeHtml(p.disposable_comfort)}"><span class="text-slate-400">${escapeHtml(ft.lblComfort)}</span> <span class="text-amber-300 font-medium">${escapeHtml(p.disposable_comfort)}</span></div>
+          <div class="col-span-2 truncate" title="${escapeHtml(p.source_project)}"><span class="text-slate-400">${escapeHtml(ft.lblSource)}</span> <span class="text-indigo-300 font-semibold">${escapeHtml(p.source_project)}</span></div>
         </div>
         <div class="text-[11px] text-slate-300 space-y-1">
-          <div class="truncate"><strong class="text-rose-300">Pain Points:</strong> ${(p.pain_points || []).join(" / ")}</div>
+          <div class="truncate" title="${escapeHtml((p.pain_points || []).join(' / '))}"><strong class="text-rose-300">${escapeHtml(ft.lblPains)}</strong> ${escapeHtml((p.pain_points || []).join(" / "))}</div>
         </div>
       `;
     }
 
     function clearQualChat() {
-      const activeList = allQualPersonas.filter(p => selectedPersonaIds.includes(p.id));
-      const names = activeList.map(x => `${x.name}(${x.age}, ${x.occupation})`).join(", ");
+      const activeList = allQualPersonas
+        .filter(p => selectedPersonaIds.includes(p.id))
+        .map(rawP => getPersonaLocalized(rawP, currentLang));
+      const names = activeList.map(x => `${x.name} (${x.age}, ${x.occupation})`).join(", ");
+      const ft = FILTER_I18N[currentLang] || FILTER_I18N.ko;
       const stream = document.getElementById("qual-chat-stream");
       stream.innerHTML = `
         <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm text-xs text-slate-600 leading-relaxed">
-          <div class="font-bold text-slate-800 mb-1"><i class="fa-solid fa-language text-indigo-600 mr-1.5"></i>Multi-Language Simultaneous Persona Interview (KO · EN · JA · ZH · ID)</div>
-          Active Persona: <strong>${names || 'Persona'}</strong>.<br/>
-          Select your preferred language in the top-right bar (<strong>🇰🇷 KO / 🇺🇸 EN / 🇯🇵 JA / 🇨🇳 ZH / 🇮🇩 ID</strong>) — the Korean persona will respond directly in your chosen language while preserving their authentic Korean lifestyle and SEC income context.
+          <div class="font-bold text-slate-800 mb-1"><i class="fa-solid fa-language text-indigo-600 mr-1.5"></i>${escapeHtml(ft.welcomeTitle)}</div>
+          ${escapeHtml(ft.welcomeActive)} <strong>${escapeHtml(names || 'Persona')}</strong><br/>
+          ${ft.welcomeDesc}
         </div>
       `;
     }
@@ -892,25 +1015,25 @@
       sendPersonaMessage();
     }
 
-    function generateStandalonePersonaReply(p, question, lang) {
-      const inc = p.income_profile || {};
-      const sec = inc.sec_tier || p.income_band || "SEC B";
-      const d5 = inc.disposable_comfort || "Level 3";
+    function generateStandalonePersonaReply(rawP, question, lang) {
+      const p = getPersonaLocalized(rawP, lang);
+      const sec = (rawP.income_profile?.sec_tier || "SEC B").split(" ").slice(0, 2).join(" ");
+      const d5 = p.disposable_comfort;
       const pains = (p.pain_points || []).join("; ");
       const motivs = (p.key_motivations || []).join("; ");
       const ideal = p.ideal_product_needs || "";
-      const j = p.journey_narrative || {};
+      const j = rawP.journey_narrative || {};
 
       if (lang === "en") {
-        return `As a ${p.age}-year-old working as "${p.occupation}" in ${p.residence} (${p.life_phase}, household income ${inc.monthly_household_income || p.income_band} / ${sec}), I currently use ${p.current_brand} (satisfaction ${p.brand_satisfaction_score}/10).\n\nMy biggest frustrations in this category are: ${pains}. On the other hand, my key purchasing drivers are: ${motivs}.\n\nConsidering my current financial comfort (${d5}), what I really want in Korea is: "${ideal}". Usually, my buying journey starts when "${j.trigger || 'I need a reliable solution'}", and I verify specs/reviews via "${j.search || 'Korean online communities'}" before purchasing.`;
+        return `Hello! I'm ${p.name}, a ${p.age}-year-old working as a "${p.occupation}" living in ${p.residence} (${p.life_phase}, household income ${p.income_band}). In the "${p.target_category}" category, I currently use ${p.current_brand} (satisfaction ${p.brand_satisfaction_score}/10).\n\n• Key Pain Points: ${pains}.\n• Core Purchase Drivers: ${motivs}.\n\nGiven my current financial comfort (${d5}), what I really look for in the Korean market is: "${ideal}".`;
       } else if (lang === "ja") {
-        return `私は${p.residence}在住、${p.age}歳の「${p.occupation}」（${p.life_phase}・世帯所得 ${inc.monthly_household_income || p.income_band} / ${sec}）です。現在「${p.target_category}」カテゴリーでは主に「${p.current_brand}」（満足度${p.brand_satisfaction_score}/10）を利用しています。\n\n普段最も不満に感じている点（ペインポイント）は、「${pains}」です。一方で重視している動機は「${motivs}」です。\n\n現在の家計余裕度（${d5}）を踏まえると、私が本当に求めている理想の製品・サービスは「${ideal}」です。`;
+        return `こんにちは。${p.residence}在住、${p.age}歳の「${p.occupation}」の${p.name}です（${p.life_phase}・世帯所得：${p.income_band}）。現在「${p.target_category}」カテゴリーでは主に「${p.current_brand}」（満足度${p.brand_satisfaction_score}/10）を利用しています。\n\n・普段の主な不満（ペインポイント）：${pains}\n・重視する購買動機：${motivs}\n\n現在の家計余裕度（${d5}）を踏まえると、私が求めている理想の製品・サービスは「${ideal}」です。`;
       } else if (lang === "zh") {
-        return `我今年${p.age}岁，居住在${p.residence}，职业是“${p.occupation}”（${p.life_phase}，家庭收入 ${inc.monthly_household_income || p.income_band} / ${sec}）。在“${p.target_category}”品类中，我目前主要使用“${p.current_brand}”（满意度 ${p.brand_satisfaction_score}/10）。\n\n我平时最大的痛点是：${pains}。而我最看重的核心动机是：${motivs}。\n\n结合我目前的可支配收入状态（${d5}），我最期待的理想产品是：“${ideal}”。`;
+        return `您好！我是${p.name}，今年${p.age}岁，居住在${p.residence}，职业是“${p.occupation}”（${p.life_phase}，家庭收入：${p.income_band}）。在“${p.target_category}”品类中，我目前主要使用“${p.current_brand}”（满意度 ${p.brand_satisfaction_score}/10）。\n\n• 核心痛点与不满：${pains}。\n• 首要购买动机：${motivs}。\n\n结合我目前的可支配预算状态（${d5}），我最期待的理想产品是：“${ideal}”。`;
       } else if (lang === "id") {
-        return `Sebagai konsumen Korea berusia ${p.age} tahun yang bekerja sebagai "${p.occupation}" di ${p.residence} (${p.life_phase}, pendapatan ${inc.monthly_household_income || p.income_band} / ${sec}), saat ini saya menggunakan ${p.current_brand} (kepuasan ${p.brand_satisfaction_score}/10).\n\nKeluhan utama (pain points) saya adalah: ${pains}. Motivasi utama saya: ${motivs}.\n\nDengan tingkat kenyamanan finansial (${d5}), produk/layanan ideal yang saya harapkan adalah: "${ideal}".`;
+        return `Halo! Saya ${p.name}, konsumen Korea berusia ${p.age} tahun yang bekerja sebagai "${p.occupation}" di ${p.residence} (${p.life_phase}, pendapatan ${p.income_band}). Untuk kategori "${p.target_category}", saat ini saya menggunakan ${p.current_brand} (kepuasan ${p.brand_satisfaction_score}/10).\n\n• Keluhan Utama (Pain Points): ${pains}.\n• Motivasi Pembelian: ${motivs}.\n\nDengan tingkat kenyamanan finansial (${d5}), produk/layanan ideal yang saya harapkan adalah: "${ideal}".`;
       }
-      return `안녕하세요, 저는 ${p.residence}에 거주하는 ${p.age}세 ${p.occupation} ${p.name}입니다 (${p.life_phase}, 가구 소득 ${inc.monthly_household_income || p.income_band} / ${sec}). 현재 '${p.target_category}' 분야에서는 주로 '${p.current_brand}'(만족도 ${p.brand_satisfaction_score}/10점)를 이용하고 있어요.\n\n평소 제가 가장 크게 느끼는 불편함(Pain Point)은 "${pains}"입니다. 반면 제가 중요하게 생각하는 기준은 "${motivs}"이고요.\n\n제 현재 가처분 소득 여유도(${d5})를 고려할 때, 앞으로 "${ideal}" 같은 제품이나 서비스가 나온다면 적극적으로 구매하거나 갈아탈 의향이 있습니다. (평소 구매 패턴: ${j.trigger || ''} → ${j.search || ''} → ${j.purchase || ''})`;
+      return `안녕하세요, 저는 ${p.residence}에 거주하는 ${p.age}세 ${p.occupation} ${p.name}입니다 (${p.life_phase}, 가구 소득 ${p.income_band}). 현재 '${p.target_category}' 분야에서는 주로 '${p.current_brand}'(만족도 ${p.brand_satisfaction_score}/10점)를 이용하고 있어요.\n\n• 평소 가장 크게 느끼는 불편함(Pain Point): ${pains}\n• 중요하게 생각하는 선택 기준: ${motivs}\n\n제 현재 가처분 소득 여유도(${d5})를 고려할 때, 앞으로 "${ideal}" 같은 제품이나 서비스가 나온다면 적극적으로 구매하거나 전환할 의향이 있습니다. (평소 구매 여정: ${j.trigger || ''} → ${j.search || ''} → ${j.purchase || ''})`;
     }
 
     async function sendPersonaMessage() {
@@ -954,11 +1077,25 @@
             })
           });
           const data = await res.json();
-          responses = data.responses || [{
+          const rawMap = Object.fromEntries(allQualPersonas.map(x => [x.id, x]));
+          responses = (data.responses || [{
             persona_id: data.persona_id,
             name: data.name,
             reply: data.reply
-          }];
+          }]).map(r => {
+            const rawP = rawMap[r.persona_id];
+            if (!rawP) return r;
+            const locP = getPersonaLocalized(rawP, currentLang);
+            return {
+              ...r,
+              name: locP.name,
+              age: locP.age,
+              gender: locP.gender,
+              occupation: locP.occupation,
+              sec_tier: (rawP.income_profile?.sec_tier || "SEC B").split(" ").slice(0, 2).join(" "),
+              source_project: locP.source_project
+            };
+          });
           cites = (data.retrieved_context || []).map(c => `${c.source} (${c.timestamp})`).join(" · ") || cites;
         } catch (e) {
           console.warn("Falling back to standalone persona engine:", e);
@@ -968,16 +1105,19 @@
       if (responses.length === 0) {
         await new Promise(r => setTimeout(r, 380));
         const activePersonas = allQualPersonas.filter(p => selectedPersonaIds.includes(p.id));
-        responses = activePersonas.map(p => ({
-          persona_id: p.id,
-          name: p.name,
-          age: p.age,
-          gender: p.gender,
-          occupation: p.occupation,
-          sec_tier: p.income_profile?.sec_tier || p.income_band,
-          source_project: p.source_project,
-          reply: generateStandalonePersonaReply(p, msg, currentLang)
-        }));
+        responses = activePersonas.map(rawP => {
+          const locP = getPersonaLocalized(rawP, currentLang);
+          return {
+            persona_id: rawP.id,
+            name: locP.name,
+            age: locP.age,
+            gender: locP.gender,
+            occupation: locP.occupation,
+            sec_tier: (rawP.income_profile?.sec_tier || "SEC B").split(" ").slice(0, 2).join(" "),
+            source_project: locP.source_project,
+            reply: generateStandalonePersonaReply(rawP, msg, currentLang)
+          };
+        });
       }
 
       document.getElementById(loadingId)?.remove();
@@ -999,15 +1139,15 @@
             <div class="flex items-center justify-between border-b border-slate-100 pb-2">
               <div class="flex items-center gap-2">
                 <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center">${(r.name || 'P')[0]}</span>
-                <span class="font-bold text-xs text-slate-900">${r.name}</span>
-                <span class="text-[11px] text-slate-500">${r.age ? r.age + ' · ' : ''}${r.occupation || ''}</span>
-                <span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded text-[10px] font-bold border border-emerald-200">${r.sec_tier || ''}</span>
+                <span class="font-bold text-xs text-slate-900">${escapeHtml(r.name)}</span>
+                <span class="text-[11px] text-slate-500">${r.age ? r.age + ' · ' : ''}${escapeHtml(r.occupation || '')}</span>
+                <span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded text-[10px] font-bold border border-emerald-200">${escapeHtml(r.sec_tier || '')}</span>
               </div>
-              <span class="text-[10px] text-slate-400 truncate max-w-[220px]">📁 ${r.source_project || ''}</span>
+              <span class="text-[10px] text-slate-400 truncate max-w-[220px]">📁 ${escapeHtml(r.source_project || '')}</span>
             </div>
             <p class="text-xs text-slate-800 leading-relaxed whitespace-pre-line">${escapeHtml(r.reply)}</p>
             <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
-              <span class="text-[10px] text-slate-400 truncate"><i class="fa-solid fa-database text-indigo-400 mr-1"></i>RAG: ${cites}</span>
+              <span class="text-[10px] text-slate-400 truncate"><i class="fa-solid fa-database text-indigo-400 mr-1"></i>RAG: ${escapeHtml(cites)}</span>
               <div class="flex items-center gap-1.5">
                 <button onclick="saveQualClip('${clipData}', this)" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-[11px] font-bold transition-colors flex items-center gap-1">
                   <i class="fa-solid fa-thumbtack"></i><span>${escapeHtml(t.clipSaveBtn)}</span>
