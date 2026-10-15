@@ -278,15 +278,14 @@
         <span class="hidden sm:inline">Methodology &amp; Data</span>
       </button>
 
-      <!-- Local LLM Model Switcher -->
-      <div class="hidden lg:flex items-center bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 gap-1.5" title="로컬 Ollama LLM 모델 선택">
+      <!-- Local LLM Model Badge (qwen2.5:14b Single Model + Live Status) -->
+      <div class="hidden lg:flex items-center bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1 gap-1.5" title="로컬 Ollama LLM (qwen2.5:14b) 연결 상태">
+        <span id="ollama-status-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
         <i class="fa-solid fa-microchip text-emerald-400 text-xs"></i>
         <select id="global-model-select" aria-label="LLM Model Select" class="bg-slate-800 text-slate-200 font-semibold text-[11px] focus:outline-none cursor-pointer">
-          <option value="qwen2.5:14b">qwen2.5:14b (14B Multilingual)</option>
-          <option value="gemma2:latest">gemma2:latest (9B Korean/Natural)</option>
-          <option value="llama3.1:latest">llama3.1:latest (8B Balanced)</option>
-          <option value="mistral-nemo:latest">mistral-nemo:latest (12B)</option>
+          <option value="qwen2.5:14b">qwen2.5:14b (9.0GB · 14B Multilingual)</option>
         </select>
+        <span id="ollama-status-label" class="text-[10px] font-bold text-slate-400 border-l border-slate-700 pl-1.5">Checking...</span>
       </div>
 
       <div onclick="switchMode(3)" class="cursor-pointer px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 hover:border-indigo-400 flex items-center gap-1 transition-colors">
@@ -774,17 +773,53 @@
       return sel ? sel.value : "qwen2.5:14b";
     }
 
-    async function checkHealth() {
-      const candidates = [];
-      if (window.location.protocol !== "file:") {
-        candidates.push(window.location.origin);
-      }
-      candidates.push("http://127.0.0.1:8000");
+    let isOllamaDirectOnline = false;
+    const OLLAMA_BASE = "http://127.0.0.1:11434";
 
+    function updateOllamaBadge(online, labelText) {
+      const dot = document.getElementById("ollama-status-dot");
+      const lbl = document.getElementById("ollama-status-label");
+      if (dot) {
+        dot.className = online
+          ? "w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]"
+          : "w-2 h-2 rounded-full bg-indigo-400";
+      }
+      if (lbl) {
+        lbl.textContent = labelText;
+        lbl.className = online
+          ? "text-[10px] font-bold text-emerald-300 border-l border-slate-700 pl-1.5"
+          : "text-[10px] font-bold text-indigo-300 border-l border-slate-700 pl-1.5";
+      }
+    }
+
+    async function checkHealth() {
+      // 1. Check Direct Local Ollama (http://127.0.0.1:11434) for qwen2.5:14b
+      try {
+        const ctrl = new AbortController();
+        const tid = setTimeout(() => ctrl.abort(), 1500);
+        const res = await fetch(`${OLLAMA_BASE}/api/tags`, { signal: ctrl.signal });
+        clearTimeout(tid);
+        if (res.ok) {
+          const data = await res.json();
+          const models = (data.models || []).map(m => m.name);
+          isOllamaDirectOnline = true;
+          const sel = document.getElementById("global-model-select");
+          if (sel) {
+            const targetModel = models.find(m => m.startsWith("qwen2.5:14b")) || models[0] || "qwen2.5:14b";
+            sel.innerHTML = `<option value="${targetModel}">${targetModel} (9.0GB · 14B Multilingual)</option>`;
+          }
+          updateOllamaBadge(true, "Local LLM Active");
+        }
+      } catch (e) {
+        isOllamaDirectOnline = false;
+      }
+
+      // 2. Check optional FastAPI middleware (http://127.0.0.1:8000)
+      const candidates = ["http://127.0.0.1:8000"];
       for (const base of candidates) {
         try {
           const ctrl = new AbortController();
-          const tid = setTimeout(() => ctrl.abort(), 1200);
+          const tid = setTimeout(() => ctrl.abort(), 1000);
           const res = await fetch(`${base}/api/health`, { signal: ctrl.signal });
           clearTimeout(tid);
           if (res.ok) {
@@ -792,18 +827,16 @@
             if (data && data.status === "online") {
               API_BASE = base;
               isBackendOnline = true;
-              if (data.available_models && data.available_models.length > 0) {
-                const sel = document.getElementById("global-model-select");
-                sel.innerHTML = data.available_models.map(m => `<option value="${m}" ${m === data.llm_model ? 'selected' : ''}>🤖 ${m}</option>`).join("");
-              }
+              updateOllamaBadge(true, "Server + LLM Active");
               return;
             }
           }
-        } catch (e) {
-          // Proceed to fallback
-        }
+        } catch (e) {}
       }
       isBackendOnline = false;
+      if (!isOllamaDirectOnline) {
+        updateOllamaBadge(false, "4D Engine Mode");
+      }
     }
 
     function switchMode(modeNum) {
@@ -1299,7 +1332,60 @@
           });
           cites = (data.retrieved_context || []).map(c => `${c.source} (${c.timestamp})`).join(" · ") || cites;
         } catch (e) {
-          console.warn("Falling back to standalone persona engine:", e);
+          console.warn("Falling back from backend:", e);
+        }
+      }
+
+      if (responses.length === 0 && isOllamaDirectOnline) {
+        try {
+          const langNameMap = { ko: "Korean (한국어)", en: "English", ja: "Japanese (日本語)", zh: "Simplified Chinese (简体中文)", id: "Indonesian (Bahasa Indonesia)" };
+          const targetLangName = langNameMap[currentLang] || "Korean (한국어)";
+          const activePersonas = allQualPersonas.filter(p => selectedPersonaIds.includes(p.id));
+          const modelName = getSelectedModel();
+          const ollamaResults = [];
+
+          for (const rawP of activePersonas) {
+            const locP = getPersonaLocalized(rawP, currentLang);
+            const sysPrompt = `You are ${locP.name} (${locP.age}, ${locP.gender}, ${locP.occupation}, ${locP.life_phase}), a South Korean consumer in income tier ${locP.sec_tier} (${locP.monthly_income}, disposable comfort: ${locP.disposable_comfort}). Your primary category/brand repertoire is: ${locP.source_project}. Your key pain points are: ${(locP.pain_points || []).join("; ")}. Reply naturally in first-person ("I") in ${targetLangName} in 2 to 4 concise, realistic sentences grounded in your Korean household budget and daily life.`;
+            const t0 = performance.now();
+            const res = await fetch(`${OLLAMA_BASE}/api/chat`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                model: modelName,
+                stream: false,
+                keep_alive: "30m",
+                options: { temperature: 0.6, num_predict: 160 },
+                messages: [
+                  { role: "system", content: sysPrompt },
+                  { role: "user", content: msg }
+                ]
+              })
+            });
+            if (res.ok) {
+              const oData = await res.json();
+              const elapsedSec = ((performance.now() - t0) / 1000).toFixed(1);
+              const evalCount = oData.eval_count || 0;
+              const evalDurSec = Math.max(0.01, (oData.eval_duration || 1) / 1e9);
+              const tokPerSec = evalCount ? (evalCount / evalDurSec).toFixed(1) : "-";
+              cites = `⚡ Local Ollama (${modelName}) · ${elapsedSec}s (${tokPerSec} tok/s) · 4D Korean RAG`;
+              ollamaResults.push({
+                persona_id: rawP.id,
+                name: locP.name,
+                age: locP.age,
+                gender: locP.gender,
+                occupation: locP.occupation,
+                sec_tier: (rawP.income_profile?.sec_tier || "SEC B").split(" ").slice(0, 2).join(" "),
+                source_project: locP.source_project,
+                reply: (oData.message && oData.message.content) ? oData.message.content.trim() : generateStandalonePersonaReply(rawP, msg, currentLang)
+              });
+            }
+          }
+          if (ollamaResults.length > 0) {
+            responses = ollamaResults;
+          }
+        } catch (e) {
+          console.warn("Direct Ollama call failed, using built-in 4D engine:", e);
         }
       }
 
