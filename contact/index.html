@@ -33,8 +33,8 @@
 <div class="contact__form-card reveal">
 <h2 class="contact__form-title">Tell Us About Your Project</h2>
 <p class="contact__form-subtitle">Fill out the form below and we'll get back to you promptly.</p>
-<!-- Using Google Apps Script endpoint for form handling -->
-<form action="https://script.google.com/macros/s/AKfycbyOKFIOpJQFBzqpeA9oEq39ZRaDfe2S2XI9RwvhDsWjmFJYn_Ay32twgKcWBxRUaoGJEg/exec" data-track-form="rfq_form" id="rfq-form" method="POST">
+<!-- Endpoint assembled in JS (never exposed in static HTML form action) -->
+<form data-track-form="rfq_form" id="rfq-form" method="POST">
 <div class="form-group">
 <label class="form-label" for="name">Your Name *</label>
 <input class="form-input" id="name" name="name" placeholder="John Smith" required="" type="text"/>
@@ -57,7 +57,7 @@
 <option value="other">Other</option>
 </select>
 </div>
-<div class="form-group" style="display:none; visibility:hidden;" aria-hidden="true">
+<div class="form-group" style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; opacity:0; pointer-events:none;" aria-hidden="true">
 <label class="form-label" for="website_url">Website URL</label>
 <input class="form-input" id="website_url" name="website_url" tabindex="-1" autocomplete="off" type="text"/>
 </div>
@@ -65,7 +65,7 @@
 <label class="form-label" for="message">Project Description *</label>
 <textarea class="form-textarea" id="message" name="message" placeholder="Tell us about your research needs, timeline, and any specific requirements..." required=""></textarea>
 </div>
-<button class="btn btn--primary btn--lg" data-track-cta="contact_submit_rfq" style="width:100%;justify-content:center;" type="submit">
+<button class="btn btn--primary btn--lg" data-track-cta="contact_submit_rfq" id="rfq-submit-btn" style="width:100%;justify-content:center;" type="submit">
             Submit RFQ <span class="btn__arrow">→</span>
 </button>
 </form>
@@ -96,67 +96,128 @@
 </div>
 </div>
 </div></section>
-<footer class="footer"><div class="container"><div class="footer__grid"><div><a class="nav__logo" href="/"><img alt="Direct Research Korea" src="/assets/images/logo.png" style="height:56px;width:auto;filter:invert(1);"/></a><p class="footer__brand-desc">Market Research Expertise in Korea.</p></div><div><h4 class="footer__heading">Services</h4><a class="footer__link" href="/services/consumer-research/">Consumer Research</a><a class="footer__link" href="/services/user-research/">User Research</a><a class="footer__link" href="/services/research-facility/">Research Facility</a></div><div><h4 class="footer__heading">Insights</h4><a class="footer__link" href="/insights/">All Insights</a></div><div><h4 class="footer__heading">Contact</h4><a class="footer__link" href="tel:+82448626263">📞 (+82) 44-862-6263</a><a class="footer__link" href="mailto:jacob.ahn@thedrk.com">✉️ jacob.ahn@thedrk.com</a></div></div><hr class="divider"/><div class="footer__bottom"><p class="footer__copy">© 2015~2016 Direct Research Korea.</p></div></div></footer>
+<footer class="footer"><div class="container"><div class="footer__grid"><div><a class="nav__logo" href="/"><img alt="Direct Research Korea" src="/assets/images/logo.png" style="height:56px;width:auto;filter:invert(1);"/></a><p class="footer__brand-desc">Market Research Expertise in Korea.</p></div><div><h4 class="footer__heading">Services</h4><a class="footer__link" href="/services/consumer-research/">Consumer Research</a><a class="footer__link" href="/services/user-research/">User Research</a><a class="footer__link" href="/services/research-facility/">Research Facility</a></div><div><h4 class="footer__heading">Insights</h4><a class="footer__link" href="/insights/">All Insights</a></div><div><h4 class="footer__heading">Contact</h4><a class="footer__link" href="tel:+82448626263">📞 (+82) 44-862-6263</a><a class="footer__link" href="/contact/">✉️ Send RFQ</a></div></div><hr class="divider"/><div class="footer__bottom"><p class="footer__copy">© 2015~2016 Direct Research Korea.</p></div></div></footer>
 <button aria-label="Back to top" class="back-to-top" id="back-to-top">↑</button>
 <script src="/js/navigation.js"></script>
 <script src="/js/analytics.js"></script>
 <script>
-  // Form submission handler (Google Apps Script)
-  const form=document.getElementById('rfq-form');
-  const success=document.getElementById('form-success');
-  if(form){form.addEventListener('submit',function(e){
-    e.preventDefault();
+  // Hardened RFQ Form submission handler (Google Apps Script)
+  // Apps Script 새 배포 후 아래 DEPLOYMENT_ID 만 새 배포 ID로 교체하세요.
+  const DEPLOYMENT_ID = 'AKfycbxUIP_op15HXkH2BFEVxkc6ScDgMVW_ck5PVryAg3dImHGIbpUtr7hBdho_TuGDsrZ8JQ';
+  const FORM_TOKEN = 'drk-rfq-v2-2026';
+  const PAGE_LOADED_AT = Date.now();
+  let userInteracted = false;
 
-    // Honeypot check
-    const honeypot = document.getElementById('website_url');
-    if(honeypot && honeypot.value !== '') {
-      form.style.display='none';
-      success.style.display='block';
-      return;
-    }
+  const form = document.getElementById('rfq-form');
+  const success = document.getElementById('form-success');
+  const submitBtn = document.getElementById('rfq-submit-btn');
 
-    // Keyword spam filter
-    const nameStr = document.getElementById('name') ? document.getElementById('name').value : '';
-    const msgStr = document.getElementById('message') ? document.getElementById('message').value : '';
-    const email = document.getElementById('email') ? document.getElementById('email').value.toLowerCase() : '';
-    const companyStr = document.getElementById('company') ? document.getElementById('company').value : '';
-    
-    const allText = (nameStr + ' ' + msgStr + ' ' + companyStr).toLowerCase();
-    
-    // 1. Emojis
-    const emojiRegex = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
-    const hasEmoji = emojiRegex.test(nameStr + ' ' + msgStr + ' ' + companyStr);
-    
-    // 2. Code-like formats (long hex strings like 03d2707aa6...)
-    const codeRegex = /[a-f0-9]{25,}/gi;
-    const hasCode = codeRegex.test(allText);
-    
-    // 3. Shady domains & keywords
-    const spamKeywords = ['bitcoin', ' btc ', 'crypto', 'casino', 'telegra.ph', 't.me', 'bit.ly', 'seo services', 'cloud mining', 'withdrawal', 'earn money', '투자', '카지노', '코인', 'viagra', 'volia saber el seu preu'];
-    const hasSpamKeyword = spamKeywords.some(keyword => allText.includes(keyword));
-    
-    // 4. Fake google company check
-    const companyLower = companyStr.toLowerCase();
-    const isFakeGoogle = (companyLower.includes('google') && !email.includes('google.com'));
-    
-    // 5. Fake name / random alphabet check
-    const hasNumbersInName = /[0-9]/.test(nameStr);
-    const hasManyConsonants = /[bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ]{5,}/.test(nameStr);
-    const hasNoVowels = /^[a-zA-Z]+$/.test(nameStr.replace(/\s/g, '')) && !/[aeiouAEIOU]/.test(nameStr) && nameStr.length > 3;
-    const hasRepeatingChars = /(.)\1{3,}/.test(nameStr);
-    
-    if(hasEmoji || hasCode || hasSpamKeyword || isFakeGoogle || hasNumbersInName || hasManyConsonants || hasNoVowels || hasRepeatingChars) {
-      // Fake success for spam bots
-      form.style.display='none';
-      success.style.display='block';
-      return;
-    }
+  if (form) {
+    ['focusin', 'input', 'keydown', 'pointerdown'].forEach(function(evt) {
+      form.addEventListener(evt, function() { userInteracted = true; }, { once: true });
+    });
 
-    const data=new FormData(form);
-    fetch(form.action,{method:'POST',body:data}).then(()=>{
-      form.style.display='none';success.style.display='block';
-    }).catch(()=>{alert('Submission failed. Please email jacob.ahn@thedrk.com directly.');});
-  });}
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // 1. Honeypot check
+      const honeypot = document.getElementById('website_url');
+      if (honeypot && honeypot.value.trim() !== '') {
+        form.style.display = 'none';
+        success.style.display = 'block';
+        return;
+      }
+
+      const nameStr = (document.getElementById('name')?.value || '').trim();
+      const email = (document.getElementById('email')?.value || '').trim();
+      const emailLower = email.toLowerCase();
+      const companyStr = (document.getElementById('company')?.value || '').trim();
+      const msgStr = (document.getElementById('message')?.value || '').trim();
+
+      // 2. Strict email format check (blocks invalid values like "QLD")
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(email)) {
+        alert('Please enter a valid email address.');
+        document.getElementById('email')?.focus();
+        return;
+      }
+
+      // 3. Minimum fill time & interaction check (bots submit instantly)
+      const elapsedMs = Date.now() - PAGE_LOADED_AT;
+      if (!userInteracted || elapsedMs < 3000) {
+        form.style.display = 'none';
+        success.style.display = 'block';
+        return;
+      }
+
+      const allText = (nameStr + ' ' + msgStr + ' ' + companyStr).toLowerCase();
+
+      // 4. Emojis
+      const emojiRegex = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
+      const hasEmoji = emojiRegex.test(nameStr + ' ' + msgStr + ' ' + companyStr);
+
+      // 5. Code-like formats (long hex strings like 03d2707aa6...)
+      const codeRegex = /[a-f0-9]{25,}/gi;
+      const hasCode = codeRegex.test(allText);
+
+      // 6. Excessive URLs (typical of cold-outreach spam with demo + unsubscribe links)
+      const urlMatches = msgStr.match(/https?:\/\/[^\s]+/gi) || [];
+      const hasTooManyUrls = urlMatches.length >= 2;
+
+      // 7. Spam & cold-outreach keywords
+      const spamKeywords = [
+        'boostleadgen', 'unsubscribe', 'opt-out', 'opt out',
+        'rebuilt your site', 'redesigned your website', 'website redesign',
+        'real concept around them', 'not a mockup',
+        'call me back in the next', 'call them in about', 'our ai, on every call',
+        '14 days free', 'no credit card',
+        'seo services', 'rank on google', 'first page of google', 'backlinks',
+        'bitcoin', ' btc ', 'crypto', 'casino', 'telegra.ph', 't.me/', 'bit.ly/',
+        'cloud mining', 'withdrawal', 'earn money', '투자', '카지노', '코인',
+        'viagra', 'volia saber el seu preu'
+      ];
+      const hasSpamKeyword = spamKeywords.some(function(keyword) { return allText.includes(keyword); });
+
+      // 8. Fake google company check
+      const companyLower = companyStr.toLowerCase();
+      const isFakeGoogle = (companyLower.includes('google') && !emailLower.includes('google.com'));
+
+      // 9. Fake name / random alphabet check
+      const hasNumbersInName = /[0-9]/.test(nameStr);
+      const hasManyConsonants = /[bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ]{5,}/.test(nameStr);
+      const hasNoVowels = /^[a-zA-Z]+$/.test(nameStr.replace(/\s/g, '')) && !/[aeiouAEIOU]/.test(nameStr) && nameStr.length > 3;
+      const hasRepeatingChars = /(.)\1{3,}/.test(nameStr);
+
+      if (hasEmoji || hasCode || hasTooManyUrls || hasSpamKeyword || isFakeGoogle || hasNumbersInName || hasManyConsonants || hasNoVowels || hasRepeatingChars) {
+        // Fake success for spam bots
+        form.style.display = 'none';
+        success.style.display = 'block';
+        return;
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+      }
+
+      const data = new FormData(form);
+      data.append('_form_token', FORM_TOKEN);
+      data.append('_loaded_at', String(PAGE_LOADED_AT));
+      data.append('_interacted', userInteracted ? '1' : '0');
+
+      const endpoint = ['https://script.google.com/macros/s/', DEPLOYMENT_ID, '/exec'].join('');
+      fetch(endpoint, { method: 'POST', body: data }).then(function() {
+        form.style.display = 'none';
+        success.style.display = 'block';
+      }).catch(function() {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Submit RFQ <span class="btn__arrow">→</span>';
+        }
+        alert('Submission failed. Please try again or call (+82) 44-862-6263.');
+      });
+    });
+  }
   </script>
 <script src="/js/cookie-consent.js"></script></body>
 </html>

@@ -4,7 +4,6 @@ date: "2018-11-11T10:07:38.315Z"
 category: "Consumers"
 thumbnail: "/assets/images/posts/aa981d_e4fb5830534e409b82f00d5404de7b95_mv2.png"
 description: " Jay Ahn, Market X Consumer Researcher in Korea.
-jacob.ahn@thedrk.com
 
 
 ‘Retro’ trend is coming back? For whom?
